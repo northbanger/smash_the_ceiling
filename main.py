@@ -17,6 +17,7 @@ from modules.vector2D import Vector2
 import random
 from characters.orb import Orb
 from characters.blob import Blob
+from characters.bra import Bra
 from modules.drawable import Drawable
 
 # screen size is the amount we show the player
@@ -36,9 +37,27 @@ def main():
    # creating the screen
    screen = pygame.display.set_mode(SCREEN_SIZE)
 
+   platforms = []
+   traps = []
+
    # instantiating the background as a Drawable object
    background = Drawable("background.png", Vector2(0,0), transparent=False)
    ground = Drawable("ground2.png", Vector2(0, 300), transparent=False)
+   platform1 = Drawable("platform.png", Vector2(150, 200), pygame.Rect(0, 0, 102, 10), transparent=True)
+   platform2 = Drawable("platform.png", Vector2(400, 250), pygame.Rect(0, 20, 52, 10), transparent=True)
+   platform3 = Drawable("platform.png", Vector2(475, 150), pygame.Rect(0, 40, 152, 10), transparent=True)
+   platform4 = Drawable("platform.png", Vector2(600, 150), pygame.Rect(0, 40, 152, 10), transparent=True)
+   platform5 = Drawable("platform.png", Vector2(625, 275), pygame.Rect(0, 0, 102, 10), transparent=True)
+   platform6 = Drawable("platform.png", Vector2(750, 250), pygame.Rect(0, 20, 52, 10), transparent=True)
+   platform7 = Drawable("platform.png", Vector2(1000, 200), pygame.Rect(0, 0, 102, 10), transparent=True)
+   platform8 = Drawable("platform.png", Vector2(1125, 100), pygame.Rect(0, 0, 102, 10), transparent=True)
+   platform9 = Drawable("platform.png", Vector2(1500, 200), pygame.Rect(0, 40, 152, 10), transparent=True)
+   #platforms = [platform1, platform2, platform3, platform4, platform5, platform6, platform7, platform8, platform9]
+   platforms = [platform1, platform2, platform3, platform4, platform5, platform6, platform7, platform8, platform9]
+   #print(platform1.getCollideRect())
+
+   bra = Bra(Vector2(200,300-CHAR_SPRITE_SIZE.y))
+   traps.append(bra)
 
    # initialize the blob on top of the ground
    blob = Blob(Vector2(0,300-CHAR_SPRITE_SIZE.y))
@@ -64,10 +83,17 @@ def main():
       #screen.blit(background, (-offset[0], -offset[1]))
       background.draw(screen)
       ground.draw(screen)
+      for platform2 in platforms:
+          platform2.draw(screen)
+      for trap2 in traps:
+          trap2.draw(screen)
       blob.draw(screen)
       #for orb in orbs:
         #orb.draw(screen)
 
+      for trap3 in traps:
+          if trap3.ranInto():
+              traps.remove(trap3)
       # flip display to the monitor
       pygame.display.flip()
 
@@ -75,6 +101,37 @@ def main():
 
       if clipRect.width > 0:
          blob.manageState("collideGround")
+
+      #variable to determine if already collided with a platform
+      i = True
+      blobPos = blob.getCollideRect()
+      for platform in platforms:
+          platPos = platform.getCollideRect()
+          print(platPos)
+          clipRect2 = blobPos.clip(platPos)
+          print(clipRect2.width > 0)
+          print(blob._FSM._state)
+          print(blobPos[1] - 90)
+          print(platPos[1] + platPos[3])
+          print()
+          #if clipRect2.width > 0 and blob._FSM == "jumping" and blobPos[1] - 10 <= platPos[1] + platPos[3]:
+        #      blob.manageState("fall")
+          if clipRect2.height >= 3 and blobPos[1]+20 >= platPos[1]:
+              blob._velocity.x = -blob._velocity.x
+              blob._velocity.y = -blob._velocity.y
+              blob.manageState("fall")
+          elif clipRect2.width >= 5 and blobPos[1] + blobPos[3] <= platPos[1] + platPos[3]:
+              blob.manageState("collidePlatform")
+              i = False
+          elif clipRect2.width < 5 and blob._FSM == "platformed" and i:
+              print("FALL")
+              blob.manageState("fall")
+              blob.updateVisual()
+
+      for trap in traps:
+          if blob.getCollideRect().colliderect(trap.getCollideRect()):
+              trap.handleCollision()
+              blob._velocity.x = -blob._velocity.x
 
       # event handling, gets all event from the eventqueue
       for event in pygame.event.get():
@@ -93,7 +150,7 @@ def main():
 
       # update everything
       ticks = gameClock.get_time() / 1000
-      blob.update(ticks)
+      blob.update(WORLD_SIZE, ticks)
       #for orb in orbs:
         #orb.update(WORLD_SIZE, ticks)
 

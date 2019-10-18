@@ -34,8 +34,18 @@ class FSM(object):
       elif action == "duck" and self._state == "falling":
           self._setState("falling")
 
+      elif action == "duck" and self._state == "jumping":
+          self._setState("jumping")
+
       elif action =="collideGround" and self._state == "ducking":
           self._setState("grounded")
+
+      elif action == "fall" and self._state == "platformed":
+          print("here")
+          self._setState("falling")
+
+      elif action == "collidePlatform" and (self._state == "falling" or self._state == "ducking"):
+          self._setState("platformed")
 
 
    def _setFacing(self, direction):
@@ -61,6 +71,9 @@ class FSM(object):
 
    def isDucking(self):
        return self._state == "ducking"
+
+   def isPlatformed(self):
+       return self._state == "platformed"
 
    def __eq__(self, state):
       return self._state == state

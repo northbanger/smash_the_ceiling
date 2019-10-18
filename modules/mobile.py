@@ -45,6 +45,9 @@ class Mobile(Drawable):
       elif self._FSM.isDucking():
           self._velocity[1] = 0
 
+      elif self._FSM.isPlatformed():
+          self._velocity[1] = 0
+
 
       # Update position based on velocity
       newPosition += self._velocity * ticks

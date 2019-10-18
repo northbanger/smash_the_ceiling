@@ -13,7 +13,7 @@ from modules.mobile import Mobile
 import os
 
 SPRITE_SIZE = Vector2(32, 32)
-MAX_VELOCITY = 75
+MAX_VELOCITY = 15
 ACCELERATION = 5.0
 
 class Blob(Mobile):
@@ -28,7 +28,7 @@ class Blob(Mobile):
         self._acceleration = ACCELERATION
         self._movement = {pygame.K_UP: False, pygame.K_DOWN: False, pygame.K_LEFT: False, pygame.K_RIGHT: False}
         self._jumpTimer = 0
-        self._jumpTime = 0.5
+        self._jumpTime = 0.75
         self._vSpeed = 100
         self._jSpeed = 100
 
@@ -57,10 +57,16 @@ class Blob(Mobile):
          elif event.key == pygame.K_UP:
             self._FSM.manageState("fall")
          elif event.key == pygame.K_DOWN:
-            self._FSM.manageState("collideGround")
+            if self._position.y + 32 >= 300:
+                self._FSM.manageState("collideGround")
+            else:
+                self._FSM.manageState("collidePlatform")
             self.updateVisual()
 
-    def update(self, ticks):
+    def update(self, worldInfo, ticks):
+      newPosition = self._position
+      if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
+          self._velocity.x = -self._velocity.x
       super().update(ticks)
       # decrease the jump timer by ticks
       if self._FSM == "jumping":
@@ -68,7 +74,7 @@ class Blob(Mobile):
 
           if self._jumpTimer > self._jumpTime:
               self._FSM.manageState("fall")
-      elif self._FSM == "grounded":
+      elif self._FSM == "grounded" or self._FSM == "platformed":
           self._jumpTimer = 0
           self.updateVisual()
 
