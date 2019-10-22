@@ -40,23 +40,33 @@ class Blob(Mobile):
       # attempt to manage state based on keypresses
       if event.type == pygame.KEYDOWN:
          if event.key == pygame.K_LEFT:
+            self._movement[pygame.K_LEFT] = True
             self._FSM.manageState("left")
          elif event.key == pygame.K_RIGHT:
+            self._movement[pygame.K_RIGHT] = True
             self._FSM.manageState("right")
             # Check for jumping keypress
          elif event.key == pygame.K_UP:
+            self._movement[pygame.K_UP] = True
             self._FSM.manageState("jump")
             self.updateVisual()
          elif event.key == pygame.K_DOWN:
+            self._movement[pygame.K_DOWN] = True
             self._FSM.manageState("duck")
             self.updateVisual()
       elif event.type == pygame.KEYUP:
          if event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
+            if event.key == pygame.K_LEFT:
+                self._movement[pygame.K_LEFT] = False
+            if event.key == pygame.K_RIGHT:
+                self._movement[pygame.K_RIGHT] = False
             self._FSM.manageState("stopMoving")
         # check for release of jumping keypress
          elif event.key == pygame.K_UP:
+            self._movement[pygame.K_UP] = False
             self._FSM.manageState("fall")
          elif event.key == pygame.K_DOWN:
+            self._movement[pygame.K_DOWN] = False
             if self._position.y + 32 >= 300:
                 self._FSM.manageState("collideGround")
             else:

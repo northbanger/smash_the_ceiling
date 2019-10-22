@@ -21,9 +21,11 @@ class Mobile(Drawable):
       # Set horizontal velocity based on the current facing
       if not self._FSM.isFacing("none"):
          if self._FSM.isFacing("left"):
-            self._velocity[0] -= self._vSpeed * ticks
+            if not (self._FSM.isJumping() or self._FSM.isFalling()):
+                self._velocity[0] -= self._vSpeed * ticks
          elif self._FSM.isFacing("right"):
-            self._velocity[0] += self._vSpeed * ticks
+            if not (self._FSM.isJumping() or self._FSM.isFalling()):
+                self._velocity[0] += self._vSpeed * ticks
 
       else:
          if abs(self._velocity[0]) > 0:
