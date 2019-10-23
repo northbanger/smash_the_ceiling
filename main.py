@@ -18,6 +18,8 @@ import random
 from characters.orb import Orb
 from characters.blob import Blob
 from characters.bra import Bra
+from characters.pan import Pan
+from characters.ring import Ring
 from modules.drawable import Drawable
 
 # screen size is the amount we show the player
@@ -40,24 +42,35 @@ def main():
    platforms = []
    traps = []
 
-   # instantiating the background as a Drawable object
-   background = Drawable("background.png", Vector2(0,0), transparent=False)
-   ground = Drawable("ground2.png", Vector2(0, 300), transparent=False)
-   platform1 = Drawable("platform.png", Vector2(150, 200), pygame.Rect(0, 0, 102, 10), transparent=True)
-   platform2 = Drawable("platform.png", Vector2(400, 250), pygame.Rect(0, 20, 52, 10), transparent=True)
-   platform3 = Drawable("platform.png", Vector2(475, 150), pygame.Rect(0, 40, 152, 10), transparent=True)
-   platform4 = Drawable("platform.png", Vector2(600, 150), pygame.Rect(0, 40, 152, 10), transparent=True)
-   platform5 = Drawable("platform.png", Vector2(625, 275), pygame.Rect(0, 0, 102, 10), transparent=True)
-   platform6 = Drawable("platform.png", Vector2(750, 250), pygame.Rect(0, 20, 52, 10), transparent=True)
-   platform7 = Drawable("platform.png", Vector2(1000, 200), pygame.Rect(0, 0, 102, 10), transparent=True)
-   platform8 = Drawable("platform.png", Vector2(1125, 100), pygame.Rect(0, 0, 102, 10), transparent=True)
-   platform9 = Drawable("platform.png", Vector2(1500, 200), pygame.Rect(0, 40, 152, 10), transparent=True)
-   #platforms = [platform1, platform2, platform3, platform4, platform5, platform6, platform7, platform8, platform9]
-   platforms = [platform1, platform2, platform3, platform4, platform5, platform6, platform7, platform8, platform9]
-   #print(platform1.getCollideRect())
+   background = Drawable("background.png", Vector2(0,0), (0,0))
+   ground = Drawable("ground2.png", Vector2(0, 300), (0,0))
+   platform1a = Drawable("platform.png", Vector2(150, 200), (0,0))
+   platform1b = Drawable("platform.png", Vector2(200, 200), (0,0))
+   platform2a = Drawable("platform.png", Vector2(400, 250), (0,0))
+   platform3a = Drawable("platform.png", Vector2(475, 150), (0,0))
+   platform3b = Drawable("platform.png", Vector2(525, 150), (0,0))
+   platform3c = Drawable("platform.png", Vector2(575, 150), (0,0))
+   platform4a = Drawable("platform.png", Vector2(600, 150), (0,0))
+   platform4b = Drawable("platform.png", Vector2(650, 150), (0,0))
+   platform4c = Drawable("platform.png", Vector2(700, 150), (0,0))
+   platform5a = Drawable("platform.png", Vector2(625, 275), (0,0))
+   platform5b = Drawable("platform.png", Vector2(675, 275), (0,0))
+   platform6a = Drawable("platform.png", Vector2(750, 250), (0,0))
+   platform7a = Drawable("platform.png", Vector2(1000, 200), (0,0))
+   platform7b = Drawable("platform.png", Vector2(1050, 200), (0,0))
+   platform8a = Drawable("platform.png", Vector2(1125, 100), (0,0))
+   platform8b = Drawable("platform.png", Vector2(1175, 100), (0,0))
+   platform9a = Drawable("platform.png", Vector2(1500, 200), (0,0))
+   platform9b = Drawable("platform.png", Vector2(1550, 200), (0,0))
+   platform9c = Drawable("platform.png", Vector2(1600, 200), (0,0))
+   platforms = [platform1a, platform1b, platform2a, platform3a, platform3b, platform3c, platform4a, platform4b, platform4c, platform5a, platform5b, platform6a, platform7a, platform7b, platform8a, platform8b, platform9a, platform9b, platform9c]
 
    bra = Bra(Vector2(200,300-CHAR_SPRITE_SIZE.y))
    traps.append(bra)
+   pan = Pan(Vector2(400,300-CHAR_SPRITE_SIZE.y))
+   traps.append(pan)
+   ring = Ring(Vector2(200,200-CHAR_SPRITE_SIZE.y))
+   traps.append(ring)
 
    # initialize the blob on top of the ground
    blob = Blob(Vector2(0,300-CHAR_SPRITE_SIZE.y))
@@ -93,7 +106,10 @@ def main():
 
       for trap3 in traps:
           if trap3.ranInto():
-              traps.remove(trap3)
+              if trap3 == bra:
+                  traps.remove(trap3)
+              elif trap3 == pan:
+                  trap.resetRanInto()
       # flip display to the monitor
       pygame.display.flip()
 
@@ -131,7 +147,11 @@ def main():
       for trap in traps:
           if blob.getCollideRect().colliderect(trap.getCollideRect()):
               trap.handleCollision()
-              blob._velocity.x = -blob._velocity.x
+              if trap == bra:
+                  blob._velocity.x = -blob._velocity.x
+              elif trap == pan:
+                  blob._velocity.x = -blob._velocity.x * 0.5
+                  blob._velocity.y = -blob._velocity.y
 
       # event handling, gets all event from the eventqueue
       for event in pygame.event.get():
@@ -151,6 +171,7 @@ def main():
       # update everything
       ticks = gameClock.get_time() / 1000
       blob.update(WORLD_SIZE, ticks)
+      pan.update(ticks)
       #for orb in orbs:
         #orb.update(WORLD_SIZE, ticks)
 

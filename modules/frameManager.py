@@ -26,8 +26,13 @@ class FrameManager(object):
 
       # Static information about the frame sizes of particular image sheets.
       _FRAME_SIZES = {
-         "blobs.png" : (128,96),
-         "water-lilly.png" : (47,49)
+         "blobs.png" : (32,32),
+         "bra.png": (32,32),
+         "weddingring.png": (32,32),
+         "platform.png": (52,10),
+         "water-lilly.png" : (47,49),
+         "background.png": (2400, 400),
+         "ground2.png": (2400, 100)
       }
 
       # A default frame size
@@ -37,7 +42,7 @@ class FrameManager(object):
       _TRANSPARENCY = []
 
       # A list of images that require to be loaded with a color key
-      _COLOR_KEY = ["blobs.png" ]
+      _COLOR_KEY = ["blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png"]
 
 
 
@@ -113,3 +118,6 @@ class FrameManager(object):
             # If we need to set the color key
             if colorKey:
                self[fileName].set_colorkey(self[fileName].get_at((0,0)))
+
+# Set up an instance for others to import
+FRAMES = FrameManager.getInstance()

@@ -21,7 +21,8 @@ class Blob(Mobile):
     def __init__(self, position):
         """initializes to orb class by inheriting from the Drawable class and
         with instance variables: _velocity, _maxVelocity, _acceleration, and _movement"""
-        super().__init__("blobs.png", position, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y)) #, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y), True)
+        #super().__init__("blobs.png", position, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y)) #, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y), True)
+        super().__init__("blobs.png", position, (0,0))
         #a vector2 of its velocity
         self._velocity = Vector2(0,0)
         self._maxVelocity = MAX_VELOCITY

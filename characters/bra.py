@@ -8,7 +8,7 @@ SPRITE_SIZE = Vector2(32, 32)
 
 class Bra(Drawable):
     def __init__(self, position):
-       super().__init__("bra.png", position, pygame.Rect(0, 0, 32, 32))
+       super().__init__("bra.png", position, (0,0))
        self._ranInto = False
 
     def ranInto(self):
