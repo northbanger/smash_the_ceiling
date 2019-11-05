@@ -41,7 +41,7 @@ class FSM(object):
           self._setState("grounded")
 
       elif action == "fall" and self._state == "platformed":
-          print("here")
+          #print("here")
           self._setState("falling")
 
       elif action == "collidePlatform" and (self._state == "falling" or self._state == "ducking"):

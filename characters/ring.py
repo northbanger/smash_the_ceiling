@@ -14,6 +14,11 @@ class Ring(Drawable):
     def ranInto(self):
         return self._ranInto
 
+    def getCollideRect(self):
+       newRect =  self._position + self._image.get_rect()
+       newRect = pygame.Rect(self._position.x + 10, self._position.y - 2, SPRITE_SIZE.x - 20, SPRITE_SIZE.y - 2)
+       return newRect
+
     def handleCollision(self):
         self._ranInto = True
         #self._imageName = "explosion.png"

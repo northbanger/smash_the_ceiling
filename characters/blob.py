@@ -10,10 +10,11 @@ import pygame
 from modules.vector2D import Vector2
 from modules.drawable import Drawable
 from modules.mobile import Mobile
+from characters.blobzap import BlobZap
 import os
 
 SPRITE_SIZE = Vector2(32, 32)
-MAX_VELOCITY = 15
+MAX_VELOCITY = 150
 ACCELERATION = 5.0
 
 class Blob(Mobile):
@@ -31,7 +32,8 @@ class Blob(Mobile):
         self._jumpTimer = 0
         self._jumpTime = 0.75
         self._vSpeed = 100
-        self._jSpeed = 100
+        self._jSpeed = 80
+        self._zaps = []
 
     # Public access to tell jumper to try to take some action, typically for collision
     def manageState(self, action):
@@ -55,6 +57,14 @@ class Blob(Mobile):
             self._movement[pygame.K_DOWN] = True
             self._FSM.manageState("duck")
             self.updateVisual()
+         elif event.key == pygame.K_SPACE:
+            if self._FSM.isFacing("left"):
+                zap = BlobZap(Vector2(self._position.x - SPRITE_SIZE.x, self._position.y + SPRITE_SIZE.y//2 - 2))
+            else:
+                zap = BlobZap(Vector2(self._position.x + SPRITE_SIZE.x, self._position.y + SPRITE_SIZE.y//2 - 2))
+            self._zaps.append(zap)
+            zap.handleEvent(self._FSM.isFacing("left"))
+
       elif event.type == pygame.KEYUP:
          if event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
             if event.key == pygame.K_LEFT:
@@ -79,6 +89,9 @@ class Blob(Mobile):
       if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
           self._velocity.x = -self._velocity.x
       super().update(ticks)
+      #scale velocity if magnitude exceeds max
+      if self._velocity.magnitude() > self._maxVelocity:
+          self._velocity.scale(self._maxVelocity)
       # decrease the jump timer by ticks
       if self._FSM == "jumping":
           self._jumpTimer += ticks

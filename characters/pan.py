@@ -18,6 +18,11 @@ class Pan(Animated):
     def ranInto(self):
         return self._ranInto
 
+    def getCollideRect(self):
+       newRect =  self._position + self._image.get_rect()
+       newRect = Vector2(0, 16) + newRect
+       return newRect
+
     def resetRanInto(self):
         self._ranInto = False
 
