@@ -102,6 +102,15 @@ def main():
               else:
                   zappy.incNotActive()
                   zappy.draw(screen)
+      for gas in level._enemies["gaston"]:
+          for arrow15 in gas._arrows:
+              if arrow15.isActive():
+                  arrow15.draw(screen)
+              elif zappy.notActive() > 5:
+                  gas._arrows.remove(arrow15)
+              else:
+                  arrow15.incNotActive()
+                  arrow15.draw(screen)
 
       for category3 in level._traps:
           for trap3 in level._traps[category3]:
@@ -213,6 +222,8 @@ def main():
           zap2.update(WORLD_SIZE, ticks)
       for devil in level._enemies["devil"]:
           devil.update(WORLD_SIZE, ticks)
+      for gaston in level._enemies["gaston"]:
+          gaston.update(WORLD_SIZE, ticks)
       for ring in level._traps["ring"]:
           ring.update(WORLD_SIZE, ticks)
 

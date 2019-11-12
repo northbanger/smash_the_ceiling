@@ -22,9 +22,12 @@ class Animated(Drawable):
          self._animationTimer += ticks
 
          if self._animationTimer > 1 / self._framesPerSecond:
+            print(self._frame)
             self._frame += 1
             self._frame %= self._nFrames
             self._animationTimer -= 1 / self._framesPerSecond
+            if self._frame == 0:
+                self._frame = 1
             self._image = FRAMES.getFrame(self._imageName, (self._frame, self._row))
 
    def startAnimation(self):

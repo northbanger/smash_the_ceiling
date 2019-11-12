@@ -6,6 +6,7 @@ from characters.bra import Bra
 from characters.pan import Pan
 from characters.ring import Ring
 from characters.devil import Devil
+from characters.gaston import Gaston
 from modules.drawable import Drawable
 
 CHAR_SPRITE_SIZE = Vector2(32, 32)
@@ -16,7 +17,7 @@ class LevelParser:
         self._decorations = []
         self._platforms = []
         self._traps = {"bra":[], "pan":[], "ring":[]}
-        self._enemies = {"devil":[]}
+        self._enemies = {"devil":[], "gaston": []}
 
     def loadLevel(self):
         file = open(os.path.join("resources", "levels", self._filename))
@@ -58,10 +59,11 @@ class LevelParser:
         for line in fileStuff:
             info = line.split(",")
             if info[0] == "enemy":
-                print(1)
                 if info[1] == "devil":
-                    print(2)
                     self._enemies[info[1]].append(Devil(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y), int(info[4])))
+                elif info[1] == "gaston":
+                    self._enemies[info[1]].append(Gaston(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y)))
+
 
 
 def main():

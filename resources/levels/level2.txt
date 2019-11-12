@@ -13,3 +13,4 @@ trap,bra,650,150
 trap,pan,800,300
 trap,ring,1050,250
 enemy,devil,200,250,3
+enemy,gaston, 200,300
