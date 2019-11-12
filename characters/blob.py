@@ -11,6 +11,7 @@ from modules.vector2D import Vector2
 from modules.drawable import Drawable
 from modules.mobile import Mobile
 from characters.blobzap import BlobZap
+from characters.forcefield import Forcefield
 import os
 
 SPRITE_SIZE = Vector2(32, 32)
@@ -35,10 +36,12 @@ class Blob(Mobile):
         self._jSpeed = 80
         self._zaps = []
         self._alive = True
+        self._forcefield = Forcefield(self._position, self._velocity)
 
     # Public access to tell jumper to try to take some action, typically for collision
     def manageState(self, action):
       self._FSM.manageState(action)
+      self._forcefield._FSM.manageState(action)
 
     def die(self):
       self._alive = False
@@ -48,6 +51,7 @@ class Blob(Mobile):
 
     def handleEvent(self, event):
       # attempt to manage state based on keypresses
+      self._forcefield.handleEvent(event)
       if event.type == pygame.KEYDOWN:
          if event.key == pygame.K_LEFT:
             self._movement[pygame.K_LEFT] = True
@@ -99,6 +103,7 @@ class Blob(Mobile):
       #scale velocity if magnitude exceeds max
       if self._velocity.magnitude() > self._maxVelocity:
           self._velocity.scale(self._maxVelocity)
+      self._forcefield.update(worldInfo, ticks)
       # decrease the jump timer by ticks
       if self._FSM == "jumping":
           self._jumpTimer += ticks

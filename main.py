@@ -1,6 +1,6 @@
 """
 Abby Nason
-smash! the ceiling 
+smash! the ceiling
 main.py
 
 TODO by Friday:
@@ -90,6 +90,8 @@ def main():
           for enemy10 in level._enemies[category10]:
               enemy10.draw(screen)
       blob.draw(screen)
+      if blob._forcefield.isActive():
+          blob._forcefield.draw(screen)
       for zap in blob._zaps:
           if zap.isActive():
               zap.draw(screen)
@@ -222,6 +224,17 @@ def main():
                   if arrow50.getCollideRect().colliderect(blobZap50.getCollideRect()):
                       arrow50.handleDestroy()
                       blobZap50.handleDestroy()
+
+      if blob._forcefield.isActive():
+          for ring40 in level._traps["ring"]:
+              for ringZap40 in ring40._zaps:
+                  if ringZap40.getCollideRect().colliderect(blob._forcefield.getCollideRect()):
+                      ringZap40.handleDestroy()
+
+          for gaston82 in level._enemies["gaston"]:
+              for arrow82 in gaston82._arrows:
+                  if arrow82.getCollideRect().colliderect(blob._forcefield.getCollideRect()):
+                      arrow82.handleDestroy()
 
       for ring20 in level._traps["ring"]:
           for zap20 in ring20._zaps:

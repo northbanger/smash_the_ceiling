@@ -1,4 +1,5 @@
 
+import pygame
 from pygame import image, Surface, Rect
 from os.path import join
 
@@ -42,13 +43,14 @@ class FrameManager(object):
          "elevator_top.png": (50,10),
          "bubble_enemies.png": (21,19),
          "gaston.png": (30,40),
+         "forcefield.png": (32,32),
       }
 
       # A default frame size
       _DEFAULT_FRAME = (32,32)
 
       # A list of images that require to be loaded with transparency
-      _TRANSPARENCY = []
+      _TRANSPARENCY = ["forcefield.png"]
 
       # A list of images that require to be loaded with a color key
       _COLOR_KEY = ["blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png"]
