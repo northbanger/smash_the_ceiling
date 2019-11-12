@@ -28,6 +28,12 @@ class LevelParser:
         self.getTraps(fileContents)
         self.getEnemies(fileContents)
 
+    def reset(self):
+        self._decorations = []
+        self._platforms = []
+        self._traps = {"bra":[], "pan":[], "ring":[]}
+        self._enemies = {"devil":[], "gaston": []}
+        
     def plantFlowers(self):
         flowerSize = 16
         for xPos in range(0, 2400, 20):

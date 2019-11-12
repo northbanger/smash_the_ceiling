@@ -15,7 +15,7 @@ class Arrow(Mobile):
     def __init__(self, position, spriteSize):
         """initializes to orb class by inheriting from the Drawable class and
         with instance variables: _velocity, _maxVelocity, _acceleration, and _movement"""
-        position = Vector2(position.x - spriteSize.x//2, position.y - spriteSize.y//6)
+        position = Vector2(position.x - spriteSize.x//2, position.y)
         #super().__init__("blobs.png", position, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y)) #, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y), True)
         super().__init__("gaston.png", position, (0,1))
         #a vector2 of its velocity

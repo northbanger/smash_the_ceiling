@@ -27,7 +27,13 @@ class Devil(Mobile):
         self._waitTimer = 0
         self._right = True
         self._patrolRect = pygame.Rect(self._position.x, self._position.y, self._patrolLength, SPRITE_SIZE.y)
+        self._hp = 25
 
+    def handleCollision(self):
+       self._hp -= 1
+
+    def isDead(self):
+        return self._hp <= 0
     # Public access to tell jumper to try to take some action, typically for collision
     def manageState(self, action):
       self._FSM.manageState(action)

@@ -20,14 +20,18 @@ class Gaston(Animated):
         self._arrowTimer = 0
         self._arrowTime = 1
         self._framesPerSecond = 5.0
+        self._hp = 50
+
+    def handleCollision(self):
+       self._hp -= 1
+
+    def isDead(self):
+        return self._hp <= 0
 
     def update(self, worldInfo, ticks):
-        super().update(ticks)
-        print(self._arrows)
-        #print(self._position)
+        super().update(ticks, True)
         for arrow in self._arrows:
             arrow.update(worldInfo, ticks)
-        #    print(arrow._position)
         self._arrowTimer += ticks
         if self._arrowTimer > self._arrowTime:
             arrow = Arrow(self._position, SPRITE_SIZE)

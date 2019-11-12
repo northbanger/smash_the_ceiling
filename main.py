@@ -1,12 +1,15 @@
 """
 Abby Nason
-Project 1
+smash! the ceiling 
 main.py
 
-Displays a star which moves based on arrow key input. When the mouse is clicked, an orb is
-introduced to the world at that position and moves in a random direction. When the star and
-an orb collide, the orb "dies" and is removed from the game. Both star and orb objects rebound
-against the edge of the world The window follows the star around the world.
+TODO by Friday:
+gaston collision: completed
+devil collision: completed
+blob death: completed
+elevator to transition to next level
+forcefield
+one level with one of the other blobs
 """
 
 
@@ -64,6 +67,8 @@ def main():
 
    # define a variable to control the main loop
    RUNNING = True
+
+   deathCycle = 0
 
    # main loop
    while RUNNING:
@@ -162,9 +167,11 @@ def main():
                   trap.handleCollision()
                   if category == "bra":
                       blob._velocity.x = -blob._velocity.x
+                      blob.die()
                   elif category == "pan":
                       blob._velocity.x = -blob._velocity.x * 0.5
                       blob._velocity.y = -blob._velocity.y
+                      blob.die()
                   elif category == "ring":
                       if blobPos[0] + blobPos[2] > trap.getCollideRect()[0] + trap.getCollideRect()[2]:
                           blob._velocity.x = 100
@@ -185,12 +192,48 @@ def main():
                       elif category4 == "ring":
                            zap4.handleEnd()
 
+      for category17 in level._enemies:
+          for enemy17 in level._enemies[category17]:
+              for zap17 in blob._zaps:
+                  if zap17.getCollideRect().colliderect(enemy17.getCollideRect()):
+                      enemy17.handleCollision()
+                      print(enemy17._hp)
+                      zap17.handleDestroy()
+                      if enemy17.isDead():
+                          level._enemies[category17].remove(enemy17)
+
+      for category21 in level._enemies:
+          for enemy21 in level._enemies[category21]:
+              if blob.getCollideRect().colliderect(enemy21.getCollideRect()):
+                  blob._velocity.x = -blob._velocity.x
+                  if category21 == "devil":
+                      blob.die()
+
       for ring7 in level._traps["ring"]:
           for ringZap in ring7._zaps:
               for blobZap in blob._zaps:
                   if ringZap.getCollideRect().colliderect(blobZap.getCollideRect()):
                       ringZap.handleDestroy()
                       blobZap.handleDestroy()
+
+      for gaston50 in level._enemies["gaston"]:
+          for arrow50 in gaston50._arrows:
+              for blobZap50 in blob._zaps:
+                  if arrow50.getCollideRect().colliderect(blobZap50.getCollideRect()):
+                      arrow50.handleDestroy()
+                      blobZap50.handleDestroy()
+
+      for ring20 in level._traps["ring"]:
+          for zap20 in ring20._zaps:
+              if zap20.getCollideRect().colliderect(blob.getCollideRect()):
+                  zap20.handleDestroy()
+                  blob.die()
+
+      for gaston64 in level._enemies["gaston"]:
+          for arrow64 in gaston64._arrows:
+              if arrow64.getCollideRect().colliderect(blob.getCollideRect()):
+                  arrow64.handleDestroy()
+                  blob.die()
 
       for platform3 in level._platforms:
           for zap5 in blob._zaps:
@@ -226,6 +269,16 @@ def main():
           gaston.update(WORLD_SIZE, ticks)
       for ring in level._traps["ring"]:
           ring.update(WORLD_SIZE, ticks)
+
+      if blob.isDead():
+          print(deathCycle)
+          if deathCycle > 30:
+              level.reset()
+              level.loadLevel()
+              # initialize the blob on top of the ground
+              blob = Blob(Vector2(0,300-CHAR_SPRITE_SIZE.y))
+              deathCycle = 0
+          deathCycle += 1
 
       # getting the offset of the of the star (our tracking object)
       Drawable.updateOffset(blob, SCREEN_SIZE, WORLD_SIZE)

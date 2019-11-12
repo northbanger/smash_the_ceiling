@@ -41,6 +41,7 @@ class FrameManager(object):
          "elevator_front.png": (50,20),
          "elevator_top.png": (50,10),
          "bubble_enemies.png": (21,19),
+         "gaston.png": (30,40),
       }
 
       # A default frame size
@@ -50,7 +51,7 @@ class FrameManager(object):
       _TRANSPARENCY = []
 
       # A list of images that require to be loaded with a color key
-      _COLOR_KEY = ["blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png"]
+      _COLOR_KEY = ["blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png"]
 
 
 

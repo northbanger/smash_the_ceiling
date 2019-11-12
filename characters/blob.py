@@ -34,10 +34,17 @@ class Blob(Mobile):
         self._vSpeed = 100
         self._jSpeed = 80
         self._zaps = []
+        self._alive = True
 
     # Public access to tell jumper to try to take some action, typically for collision
     def manageState(self, action):
       self._FSM.manageState(action)
+
+    def die(self):
+      self._alive = False
+
+    def isDead(self):
+      return not self._alive
 
     def handleEvent(self, event):
       # attempt to manage state based on keypresses
@@ -59,9 +66,9 @@ class Blob(Mobile):
             self.updateVisual()
          elif event.key == pygame.K_SPACE:
             if self._FSM.isFacing("left"):
-                zap = BlobZap(Vector2(self._position.x - SPRITE_SIZE.x, self._position.y + SPRITE_SIZE.y//2 - 2))
+                zap = BlobZap(Vector2(self._position.x - SPRITE_SIZE.x, self._position.y + SPRITE_SIZE.y//2 - 6))
             else:
-                zap = BlobZap(Vector2(self._position.x + SPRITE_SIZE.x, self._position.y + SPRITE_SIZE.y//2 - 2))
+                zap = BlobZap(Vector2(self._position.x + SPRITE_SIZE.x, self._position.y + SPRITE_SIZE.y//2 - 6))
             self._zaps.append(zap)
             zap.handleEvent(self._FSM.isFacing("left"))
 
@@ -104,10 +111,12 @@ class Blob(Mobile):
 
     def updateVisual(self):
         fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
-        if self._FSM.isDucking():
-            y = 1
+        #if self._FSM.isDucking():
+        #    y = 1
         if self._FSM.isJumping() or self._FSM.isFalling():
             y = 2
+        elif self._FSM.isGrounded and not self._alive:
+            y = 1
         else:
             y = 0
         rect = pygame.Rect(0, SPRITE_SIZE.y * y, SPRITE_SIZE.x, SPRITE_SIZE.y)
