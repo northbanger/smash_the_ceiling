@@ -15,7 +15,7 @@ class Forcefield(Mobile):
        super().__init__("forcefield.png", position, (0,0))
        self._powerUpTime = 5
        self._powerUpTimer = 0
-       self._active = True
+       self._active = False
        self._velocity = velocity
        self._maxVelocity = MAX_VELOCITY
        self._acceleration = ACCELERATION
@@ -65,12 +65,3 @@ class Forcefield(Mobile):
                 self._FSM.manageState("fall")
         elif self._FSM == "grounded" or self._FSM == "platformed":
             self._jumpTimer = 0
-
-    def handleCollision(self):
-        self._ranInto = True
-        #self._imageName = "explosion.png"
-        #fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
-        #rect = pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y)
-        #self._image = pygame.Surface((rect.width,rect.height))
-        #self._image.blit(fullImage, (0,0), rect)
-        #self._image.set_colorkey(self._image.get_at((0,0)))

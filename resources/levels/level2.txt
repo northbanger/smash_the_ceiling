@@ -10,7 +10,13 @@ platform,1350,250,2
 platform,2000,275,2
 platform,2125,200,3
 trap,bra,650,150
+trap,bra,1450,125
 trap,pan,800,300
+trap,pan,2050,275
 trap,ring,1050,250
+trap,ring,1525,300
 enemy,devil,200,250,3
-enemy,gaston, 200,300
+enemy,devil,1100,200,4
+enemy,gaston,200,300
+enemy,gaston,2300,300
+enemy,gaston,1400,250

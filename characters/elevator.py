@@ -7,18 +7,19 @@ MAIN_SPRITE_SIZE = Vector2(50, 20)
 LITTLE_SPRITE_SIZE = Vector2(50,10)
 
 
-class Elevator(Drawable):
+class Elevator:
     def __init__(self, position, worldHeight):
        self._position = position
        self._parts = {"back": [], "front": [], "doors": [], "top": []}
-       totalHeight = worldHeight-(100 + MAIN_SPRITE_SIZE.x)
+       totalHeight = worldHeight-(50 + MAIN_SPRITE_SIZE.x)
+       print(totalHeight)
        for i in range(0, totalHeight, MAIN_SPRITE_SIZE.y):
            self._parts["back"].append(Drawable("elevator_back.png", Vector2(self._position.x,i), (0,0)))
-       for j in range(0, totalHeight-60, MAIN_SPRITE_SIZE.y)
+       for j in range(0, totalHeight-60, MAIN_SPRITE_SIZE.y):
            self._parts["front"].append(Drawable("elevator_front.png", Vector2(self._position.x,j), (0,0)))
-       for k in range(3):
-           self._parts.append(Drawable("elevator_doors.png", Vector2(self._position.x,k), (0,0)))
-       self._parts.append(Drawable("elevator_top.png", ))
+       for k in range(totalHeight-60, totalHeight, MAIN_SPRITE_SIZE.y):
+           self._parts["doors"].append(Drawable("elevator_doors.png", Vector2(self._position.x,k), (0,0)))
+       self._parts["top"].append(Drawable("elevator_top.png", Vector2(self._position.x, totalHeight-60), (0,0)))
        self._ranInto = False
 
     def ranInto(self):

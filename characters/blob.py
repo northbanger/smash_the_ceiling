@@ -37,11 +37,12 @@ class Blob(Mobile):
         self._zaps = []
         self._alive = True
         self._forcefield = Forcefield(self._position, self._velocity)
+        self._endLevel = False
 
     # Public access to tell jumper to try to take some action, typically for collision
     def manageState(self, action):
       self._FSM.manageState(action)
-      self._forcefield._FSM.manageState(action)
+      #self._forcefield._FSM.manageState(action)
 
     def die(self):
       self._alive = False
@@ -51,7 +52,7 @@ class Blob(Mobile):
 
     def handleEvent(self, event):
       # attempt to manage state based on keypresses
-      self._forcefield.handleEvent(event)
+      #self._forcefield.handleEvent(event)
       if event.type == pygame.KEYDOWN:
          if event.key == pygame.K_LEFT:
             self._movement[pygame.K_LEFT] = True
@@ -95,24 +96,35 @@ class Blob(Mobile):
                 self._FSM.manageState("collidePlatform")
             self.updateVisual()
 
-    def update(self, worldInfo, ticks):
-      newPosition = self._position
-      if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
-          self._velocity.x = -self._velocity.x
-      super().update(ticks)
-      #scale velocity if magnitude exceeds max
-      if self._velocity.magnitude() > self._maxVelocity:
-          self._velocity.scale(self._maxVelocity)
-      self._forcefield.update(worldInfo, ticks)
-      # decrease the jump timer by ticks
-      if self._FSM == "jumping":
-          self._jumpTimer += ticks
+    def handleEndLevel(self):
+        self._endLevel = True
 
-          if self._jumpTimer > self._jumpTime:
-              self._FSM.manageState("fall")
-      elif self._FSM == "grounded" or self._FSM == "platformed":
-          self._jumpTimer = 0
-          self.updateVisual()
+    def update(self, worldInfo, ticks):
+      if not self._endLevel:
+          newPosition = self._position
+          if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
+              self._velocity.x = -self._velocity.x
+          super().update(ticks)
+          #scale velocity if magnitude exceeds max
+          if self._velocity.magnitude() > self._maxVelocity:
+              self._velocity.scale(self._maxVelocity)
+          #self._forcefield.update(worldInfo, ticks)
+          # decrease the jump timer by ticks
+          if self._FSM == "jumping":
+              self._jumpTimer += ticks
+
+              if self._jumpTimer > self._jumpTime:
+                  self._FSM.manageState("fall")
+          elif self._FSM == "grounded" or self._FSM == "platformed":
+              self._jumpTimer = 0
+              self.updateVisual()
+      else:
+          self._position.y -= 5
+          self._velocity.x = 0
+          self._velocity.y = -MAX_VELOCITY//8 * ticks
+          if self._velocity.magnitude() > self._maxVelocity:
+              self._velocity.scale(self._maxVelocity)
+          #super().update(ticks)
 
     def updateVisual(self):
         fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()

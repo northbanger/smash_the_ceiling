@@ -50,7 +50,7 @@ class FrameManager(object):
       _DEFAULT_FRAME = (32,32)
 
       # A list of images that require to be loaded with transparency
-      _TRANSPARENCY = ["forcefield.png"]
+      _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png"]
 
       # A list of images that require to be loaded with a color key
       _COLOR_KEY = ["blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png"]

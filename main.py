@@ -4,12 +4,20 @@ smash! the ceiling
 main.py
 
 TODO by Friday:
-gaston collision: completed
-devil collision: completed
-blob death: completed
-elevator to transition to next level
-forcefield
-one level with one of the other blobs
+gaston collision:
+    - completed
+devil collision:
+    - completed
+blob death:
+    - completed
+elevator to transition to next level:
+    - not started
+forcefield:
+    - follows the blob: completed
+    - make drawing of forcefield and collision box bigger
+    - need to create a new drawing
+one level with one of the other blobs:
+    - not started
 """
 
 
@@ -23,6 +31,7 @@ from characters.blob import Blob
 from characters.bra import Bra
 from characters.pan import Pan
 from characters.ring import Ring
+from characters.elevator import Elevator
 from modules.drawable import Drawable
 from modules.level_parser import LevelParser
 #from modules.gameManager import GameManager
@@ -32,6 +41,7 @@ from modules.level_parser import LevelParser
 SCREEN_SIZE = (400, 400)
 WORLD_SIZE = (2400, 400)
 CHAR_SPRITE_SIZE = Vector2(32, 32)
+LEVELS = ["level1.txt", "level2.txt"]
 
 def main():
 
@@ -50,11 +60,15 @@ def main():
    background = Drawable("background.png", Vector2(0,0), (0,0))
    ground = Drawable("ground2.png", Vector2(0, 300), (0,0))
 
-   level = LevelParser("level2.txt")
+   level = LevelParser(LEVELS[0])
    level.loadLevel()
 
    # initialize the blob on top of the ground
    blob = Blob(Vector2(0,300-CHAR_SPRITE_SIZE.y))
+
+   elevator = Elevator(Vector2(WORLD_SIZE[0]-50,300), WORLD_SIZE[1])
+
+   nextLevel = 1
 
    # initialize the orb list
    #orbs = []
@@ -69,6 +83,8 @@ def main():
    RUNNING = True
 
    deathCycle = 0
+
+   endCount = 0
 
    # main loop
    while RUNNING:
@@ -89,9 +105,9 @@ def main():
       for category10 in level._enemies:
           for enemy10 in level._enemies[category10]:
               enemy10.draw(screen)
+      for back in elevator._parts["back"]:
+          back.draw(screen)
       blob.draw(screen)
-      if blob._forcefield.isActive():
-          blob._forcefield.draw(screen)
       for zap in blob._zaps:
           if zap.isActive():
               zap.draw(screen)
@@ -100,6 +116,13 @@ def main():
           else:
               zap.incNotActive()
               zap.draw(screen)
+      for part in elevator._parts:
+          if part != "back":
+              for section in elevator._parts[part]:
+                  section.draw(screen)
+      #elevator.draw(screen)
+      if blob._forcefield.isActive():
+          blob._forcefield.draw(screen)
       for ringy in level._traps["ring"]:
           for zappy in ringy._zaps:
               if zappy.isActive():
@@ -169,11 +192,13 @@ def main():
                   trap.handleCollision()
                   if category == "bra":
                       blob._velocity.x = -blob._velocity.x
-                      blob.die()
+                      if not blob._forcefield.isActive():
+                          blob.die()
                   elif category == "pan":
                       blob._velocity.x = -blob._velocity.x * 0.5
                       blob._velocity.y = -blob._velocity.y
-                      blob.die()
+                      if not blob._forcefield.isActive():
+                          blob.die()
                   elif category == "ring":
                       if blobPos[0] + blobPos[2] > trap.getCollideRect()[0] + trap.getCollideRect()[2]:
                           blob._velocity.x = 100
@@ -199,9 +224,9 @@ def main():
               for zap17 in blob._zaps:
                   if zap17.getCollideRect().colliderect(enemy17.getCollideRect()):
                       enemy17.handleCollision()
-                      print(enemy17._hp)
+                      #print(enemy17._hp)
                       zap17.handleDestroy()
-                      if enemy17.isDead():
+                      if enemy17.isDead() and enemy17 in level._enemies[category17]:
                           level._enemies[category17].remove(enemy17)
 
       for category21 in level._enemies:
@@ -209,7 +234,8 @@ def main():
               if blob.getCollideRect().colliderect(enemy21.getCollideRect()):
                   blob._velocity.x = -blob._velocity.x
                   if category21 == "devil":
-                      blob.die()
+                      if not blob._forcefield.isActive():
+                          blob.die()
 
       for ring7 in level._traps["ring"]:
           for ringZap in ring7._zaps:
@@ -240,13 +266,20 @@ def main():
           for zap20 in ring20._zaps:
               if zap20.getCollideRect().colliderect(blob.getCollideRect()):
                   zap20.handleDestroy()
-                  blob.die()
+                  if not blob._forcefield.isActive():
+                      blob.die()
 
       for gaston64 in level._enemies["gaston"]:
           for arrow64 in gaston64._arrows:
               if arrow64.getCollideRect().colliderect(blob.getCollideRect()):
                   arrow64.handleDestroy()
-                  blob.die()
+                  if not blob._forcefield.isActive():
+                      blob.die()
+
+      for door in elevator._parts["doors"]:
+          for zap102 in blob._zaps:
+              if zap102.getCollideRect().colliderect(door.getCollideRect()):
+                  zap102.handleEnd()
 
       for platform3 in level._platforms:
           for zap5 in blob._zaps:
@@ -255,7 +288,7 @@ def main():
           for ring15 in level._traps["ring"]:
               for zap15 in ring15._zaps:
                   if zap15.getCollideRect().colliderect(platform3.getCollideRect()):
-                      zap5.handleEnd()
+                      zap15.handleEnd()
                   #blob._zaps.remove(zap5)
 
 
@@ -292,6 +325,23 @@ def main():
               blob = Blob(Vector2(0,300-CHAR_SPRITE_SIZE.y))
               deathCycle = 0
           deathCycle += 1
+
+      for door3 in elevator._parts["back"]:
+          clipper = blob.getCollideRect().clip(door3.getCollideRect())
+          if blob._FSM == "grounded" and clipper.width == 32:
+              endCount += 1
+              blob.handleEndLevel()
+              print(blob._position)
+          #elif endCount > 30:
+              if blob._position.y < 0:
+                  level = LevelParser(LEVELS[nextLevel])
+                  nextLevel += 1
+                  if nextLevel > len(LEVELS) - 1:
+                      nextLevel = 0
+                  level.loadLevel()
+                  blob = Blob(Vector2(0,300-CHAR_SPRITE_SIZE.y))
+
+
 
       # getting the offset of the of the star (our tracking object)
       Drawable.updateOffset(blob, SCREEN_SIZE, WORLD_SIZE)
