@@ -1,3 +1,4 @@
+world size,2400,400
 platform,200,250,3
 platform,375,200,2
 platform,475,150,8

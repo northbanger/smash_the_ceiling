@@ -31,9 +31,12 @@ class FrameManager(object):
          "bra.png": (32,32),
          "weddingring.png": (32,32),
          "platform.png": (52,10),
+         "platform2.png": (52,10),
          "water-lilly.png" : (47,49),
          "background.png": (2400, 400),
+         "background2.png": (2400, 400),
          "ground2.png": (2400, 100),
+         "ground3.png": (2400, 100),
          "flowers.png": (16,16),
          "nuts_and_milk.png": (16,16),
          "dizzy_devil.png": (32,32),
@@ -53,7 +56,7 @@ class FrameManager(object):
       _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png"]
 
       # A list of images that require to be loaded with a color key
-      _COLOR_KEY = ["blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png"]
+      _COLOR_KEY = ["blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png"]
 
 
 
