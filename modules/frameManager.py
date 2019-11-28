@@ -1,4 +1,3 @@
-
 import pygame
 from pygame import image, Surface, Rect
 from os.path import join
@@ -28,15 +27,27 @@ class FrameManager(object):
       # Static information about the frame sizes of particular image sheets.
       _FRAME_SIZES = {
          "blobs.png" : (32,32),
+         "menu_blobs.png": (64,64),
          "bra.png": (32,32),
+         "fryingpan.png": (32,32),
          "weddingring.png": (32,32),
          "platform.png": (52,10),
          "platform2.png": (52,10),
+         "platform3.png": (52,10),
+         "platform4.png": (52,10),
+         "blob_selection.png":(112, 112),
          "water-lilly.png" : (47,49),
          "background.png": (2400, 400),
          "background2.png": (2400, 400),
+         "background3a.png": (2400, 400),
+         "background3b.png": (400, 2400),
+         "background4.png": (2400, 400),
+         "background5.png": (400, 400),
          "ground2.png": (2400, 100),
          "ground3.png": (2400, 100),
+         "ground4a.png": (2400, 100),
+         "ground4b.png": (400, 100),
+         "ground5.png": (2400, 100),
          "flowers.png": (16,16),
          "nuts_and_milk.png": (16,16),
          "dizzy_devil.png": (32,32),
@@ -47,16 +58,17 @@ class FrameManager(object):
          "bubble_enemies.png": (21,19),
          "gaston.png": (30,40),
          "forcefield.png": (32,32),
+         "font.png": (8,8),
       }
 
       # A default frame size
       _DEFAULT_FRAME = (32,32)
 
       # A list of images that require to be loaded with transparency
-      _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png"]
+      _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png", "blob_selection.png"]
 
       # A list of images that require to be loaded with a color key
-      _COLOR_KEY = ["blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png"]
+      _COLOR_KEY = ["blobs.png", "menu_blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "platform3.png", "platform4.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png", "font.png"]
 
 
 

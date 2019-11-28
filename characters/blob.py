@@ -20,11 +20,20 @@ ACCELERATION = 5.0
 
 class Blob(Mobile):
 
-    def __init__(self, position):
+    def __init__(self, position, color="pink"):
         """initializes to orb class by inheriting from the Drawable class and
         with instance variables: _velocity, _maxVelocity, _acceleration, and _movement"""
         #super().__init__("blobs.png", position, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y)) #, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y), True)
-        super().__init__("blobs.png", position, (0,0))
+        self._color = color
+        if color == "pink":
+            self._offset = (0,0)
+        elif color == "blue":
+            self._offset = (1,0)
+        elif color == "green":
+            self._offset = (2,0)
+        elif color == "orange":
+            self._offset = (3,0)
+        super().__init__("blobs.png", position, self._offset)
         #a vector2 of its velocity
         self._velocity = Vector2(0,0)
         self._maxVelocity = MAX_VELOCITY
@@ -99,32 +108,41 @@ class Blob(Mobile):
     def handleEndLevel(self):
         self._endLevel = True
 
-    def update(self, worldInfo, ticks):
-      if not self._endLevel:
-          newPosition = self._position
-          if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
-              self._velocity.x = -self._velocity.x
-          super().update(ticks)
-          #scale velocity if magnitude exceeds max
-          if self._velocity.magnitude() > self._maxVelocity:
-              self._velocity.scale(self._maxVelocity)
-          #self._forcefield.update(worldInfo, ticks)
-          # decrease the jump timer by ticks
-          if self._FSM == "jumping":
-              self._jumpTimer += ticks
+    def update(self, worldInfo, ticks, cheat=False, horizontal=False):
+      if not cheat:
+          if not self._endLevel:
+              newPosition = self._position
+              if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
+                  self._velocity.x = -self._velocity.x
+              super().update(ticks)
+              #scale velocity if magnitude exceeds max
+              if self._velocity.magnitude() > self._maxVelocity:
+                  self._velocity.scale(self._maxVelocity)
+              #self._forcefield.update(worldInfo, ticks)
+              # decrease the jump timer by ticks
+              if self._FSM == "jumping":
+                  self._jumpTimer += ticks
 
-              if self._jumpTimer > self._jumpTime:
-                  self._FSM.manageState("fall")
-          elif self._FSM == "grounded" or self._FSM == "platformed":
-              self._jumpTimer = 0
-              self.updateVisual()
+                  if self._jumpTimer > self._jumpTime:
+                      self._FSM.manageState("fall")
+              elif self._FSM == "grounded" or self._FSM == "platformed":
+                  self._jumpTimer = 0
+                  self.updateVisual()
+          else:
+              self._position.y -= 5
+              self._velocity.x = 0
+              self._velocity.y = -MAX_VELOCITY//8 * ticks
+              if self._velocity.magnitude() > self._maxVelocity:
+                  self._velocity.scale(self._maxVelocity)
+              #super().update(ticks)
       else:
-          self._position.y -= 5
-          self._velocity.x = 0
-          self._velocity.y = -MAX_VELOCITY//8 * ticks
-          if self._velocity.magnitude() > self._maxVelocity:
-              self._velocity.scale(self._maxVelocity)
-          #super().update(ticks)
+          if horizontal:
+              self._position.x = 1950
+              self._position.y = 300 - 32
+          else:
+              self._position.x = 50
+              self._position.y = 70
+
 
     def updateVisual(self):
         fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
@@ -136,7 +154,7 @@ class Blob(Mobile):
             y = 1
         else:
             y = 0
-        rect = pygame.Rect(0, SPRITE_SIZE.y * y, SPRITE_SIZE.x, SPRITE_SIZE.y)
+        rect = pygame.Rect(self._offset[0], SPRITE_SIZE.y * y, SPRITE_SIZE.x, SPRITE_SIZE.y)
         self._image = pygame.Surface((rect.width,rect.height))
         self._image.blit(fullImage, (0,0), rect)
         self._image.set_colorkey(self._image.get_at((0,0)))

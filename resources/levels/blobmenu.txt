@@ -1,0 +1,5 @@
+world size,400,1400
+selection,0,144
+selection,150,144
+selection,300,144
+text,0,350
