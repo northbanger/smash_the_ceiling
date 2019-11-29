@@ -21,6 +21,9 @@ class MenuParser:
         self._selectionAreas = []
         self._blobs = []
         self._text = []
+        self._selectedBlob = None
+        self._ready = False
+        self._startButton = None
 
     def getBackground(self):
         if self._filename == "startmenu.txt":
@@ -34,15 +37,16 @@ class MenuParser:
         fileContents = file.read()
         file.close()
         self.getWorldSize(fileContents)
-        self._ground = Drawable(self.getGround(), Vector2(0, self._worldsize[1]-100), (0,0))
-        self._blob = Blob(Vector2(0,self._worldsize[1]-100-CHAR_SPRITE_SIZE.y))
         self.getBlobSelectionAreas(fileContents)
+        self.getStartButton(fileContents)
         self.getText(fileContents)
 
     def reset(self):
         self._selectionAreas = []
         self._blobs = []
         self._text = []
+        self._ready = False
+        self._selectedBlob = None
 
     def getBlobSelectionAreas(self, fileContents):
         SELECTION_SIZE = Vector2(112, 112)
@@ -55,10 +59,22 @@ class MenuParser:
             if info[0] == "selection":
                 if self._filename == "blobmenu.txt":
                     self._selectionAreas.append(Drawable("blob_selection.png", Vector2(int(info[1]), int(info[2])), (selectionCount,0)))
-                    blobXpos = (int(info[1]) + SELECTION_SIZE.x)/2 - BLOB_SIZE.x/2
-                    blobYpos = (int(info[2]) + SELECTION_SIZE.y)/2  - BLOB_SIZE.y/2
-                    self._blobs.append(Drawable("menu_blobs.png", Vector2(blobXpos, blobYpos), (selectionCount,0)))
+                    blobXpos = int(info[1]) + SELECTION_SIZE.x//2 - BLOB_SIZE.x//2
+                    blobYpos = int(info[2]) + SELECTION_SIZE.y//2  - BLOB_SIZE.y//2 - 14
+                    print(blobXpos, blobYpos)
+                    self._blobs.append(Drawable("menu_blobs.png", Vector2(blobXpos, blobYpos), (selectionCount + 1,0)))
                     selectionCount += 1
+
+    def getStartButton(self, fileContents):
+        fileStuff = fileContents.split("\n")
+        #selection,xval,yval
+        selectionCount = 0
+        for line in fileStuff:
+            info = line.split(",")
+            if info[0] == "start":
+                xPos = (self._worldsize[0] - int(info[1]))//2 - 64//2
+                self._startButton = Drawable("startbutton.png", Vector2(xPos, int(info[2])), (0,0))
+
 
     def getText(self, fileContents):
         fileStuff = fileContents.split("\n")
@@ -70,12 +86,16 @@ class MenuParser:
             info = line.split(",")
             if info[0] == "text":
                 text = info[3].upper()
+                xCenter = (self._worldsize[0] + int(info[1]))/2 - (len(text)//2 * 8)
                 for i in range(len(text)):
-                    aVal = ord(text[i])
-                    numInAlph = aVal - 65
-                    offsetX = numInAlph // 13
-                    offsetY = numInAlph - 13*offsetX
-                    self._text.append(Drawable("font.png", Vector2(int(info[1]) + 8 * i, int(info[2])), (offsetX,offsetY)))
+                    if text[i] != " ":
+                        aVal = ord(text[i])
+                        numInAlph = aVal - 65
+                        offsetY = numInAlph // 13
+                        offsetX = numInAlph - 13*offsetY
+                        print(text[i] + ": (" + str(offsetX) + ", " + str(offsetY) + ") => (" + str(int(info[1]) + 8 * i) + ", " + str(int(info[2])) + ")")
+                        self._text.append(Drawable("font.png", Vector2(int(xCenter) + 8 * i, int(info[2])), (2 + offsetX, 7 + offsetY)))
+        #print(self._text)
 
     def getWorldSize(self,fileContents):
         fileStuff = fileContents.split("\n")
@@ -92,11 +112,52 @@ class MenuParser:
             blob.draw(screen)
         for letter in self._text:
             letter.draw(screen)
+        self._startButton.draw(screen)
+
+    def handleEvent(self, event):
+         if event.type == pygame.MOUSEBUTTONDOWN:
+            #left click is 1
+            if event.button == 1:
+                self.detectSelectedArea(list(event.pos))
+
+    def detectSelectedArea(self, mousePos):
+        for area in self._selectionAreas:
+            positionBox = area.getCollideRect()
+            if positionBox.collidepoint(mousePos):
+                if area == self._selectionAreas[0]:
+                    color = "blue"
+                elif area == self._selectionAreas[1]:
+                    color = "green"
+                elif area == self._selectionAreas[2]:
+                    color = "orange"
+                self._selectedBlob = color
+                self._ready = False
+        #print(self._selectedBlob)
+        if self._startButton.getCollideRect().collidepoint(mousePos):
+            self._ready = True
+
+
+    def madeSelection(self):
+        if self._filename == "startmenu.txt":
+            self._selectedBlob = "pink"
+            return True
+        if self._selectedBlob != None:
+            return True
+        else:
+            return False
+
+    def getSelection(self):
+        return self._selectedBlob
+
+    def nextLevel(self):
+        return self._ready
+
+
 
 def main():
     parser = MenuParser("blobmenu.txt")
     parser.loadMenu()
-    
+
 
 if __name__ == "__main__":
    main()

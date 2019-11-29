@@ -1,5 +1,6 @@
-world size,400,1400
-selection,0,144
-selection,150,144
-selection,300,144
-text,0,350
+world size,400,400
+selection,11,144
+selection,144,144
+selection,277,144
+start,0,300
+text,0,50,select your blob

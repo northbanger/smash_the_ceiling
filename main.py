@@ -6,18 +6,17 @@ main.py
 TODO by end of Thanksgiving:
 
 make main shorter:
-    - move everything to level manager
+    - completed: move everything to level manager
 
-forcefield:
+forcefield and powerups:
     - follows the blob: completed
     - make drawing of forcefield and collision box bigger
     - need to create a new drawing
 
 levels:
     - completed: different color schemes for different levels
-    - one more level with original blob (vertical that goes to ceiling)
+    - completed: one more level with original blob (vertical that goes to ceiling)
     - one level with one of the other blobs
-    - not started
 
 boss enemy:
     - character that spawns mini blobs
@@ -28,14 +27,14 @@ smash animation:
     - animation that shows that you have to train other blobs
 
 menus:
-    - start menu
-    - blob selection screen:
+    - completed: start menu
+    - completed: blob selection screen:
         - three other blobs to select from
         - once you click on one it takes you to next level with one of the blobs
 
 
 cheats to go to end of level:
-    - cheat codes
+    - completed:cheat codes
 
 music and sound effects:
     - background music: the man by taylor swift, nightmare by halsey if possible
@@ -58,6 +57,7 @@ from characters.ring import Ring
 from characters.elevator import Elevator
 from modules.drawable import Drawable
 from modules.level_parser import LevelParser
+from modules.menu_parser import MenuParser
 #from modules.gameManager import GameManager
 
 # screen size is the amount we show the player
@@ -69,7 +69,9 @@ LEVELS = ["level1.txt", "level2.txt", "level3.txt"]
 LEVELS_IN_PROGRESS = ["level4.txt"]
 MENUS = ["startmenu.txt", "blobmenu.txt"]
 ANIMATIONS = ["smash1.txt", "smash2.txt"]
-ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5: (ANIMATIONS, 0), 6:(MENUS, 1), 7:(LEVELS, 3), 8:(ANIMATIONS, 1)}
+#5: ANIMATIONS, 0
+#8: ANIMATIONS, 1
+ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(MENUS, 1), 6:(LEVELS, 3)}
 
 def main():
 
@@ -85,8 +87,21 @@ def main():
    platforms = []
    traps = []
 
-   level = LevelParser(LEVELS[0])
-   level.loadLevel()
+   nextPhase = 1
+
+   phase = ORDER[nextPhase]
+   print(phase[0][phase[1]])
+
+   if phase[0] == LEVELS:
+       current = LevelParser(phase[0][phase[1]])
+       level.loadLevel()
+   elif phase[0] == MENUS:
+       level = MenuParser(phase[0][phase[1]])
+       level.loadMenu()
+   #elif phase[0] = ANIMATIONS:
+
+   #level = LevelParser(LEVELS[0])
+   #level.loadLevel()
    WORLD_SIZE = level._worldsize
 
    #background = Drawable("background.png", Vector2(0,0), (0,0))
@@ -97,7 +112,7 @@ def main():
 
    #elevator = Elevator(Vector2(WORLD_SIZE[0]-50,300), WORLD_SIZE[1])
 
-   nextLevel = 1
+   nextPhase += 1
 
    # initialize the orb list
    #orbs = []
@@ -111,7 +126,7 @@ def main():
    # define a variable to control the main loop
    RUNNING = True
 
-   endCount = 0
+   #endCount = 0
 
    # main loop
    while RUNNING:
@@ -133,12 +148,16 @@ def main():
 
       # draw everything based on the offset
       #screen.blit(background, (-offset[0], -offset[1]))
-      level.draw(screen)
+      if phase[0] == LEVELS:
+          level.draw(screen)
+      elif phase[0] == MENUS:
+          level.draw(screen)
 
       # flip display to the monitor
       pygame.display.flip()
 
-      level.detectCollision()
+      if phase[0] == LEVELS:
+          level.detectCollision()
 
 
       # event handling, gets all event from the eventqueue
@@ -149,27 +168,70 @@ def main():
             RUNNING = False
          # handle arrow key up and down events
          else:
-             level.handleEvent(event)
+             if phase[0] == LEVELS:
+                 level.handleEvent(event)
+             if phase[0] == MENUS:
+                 level.handleEvent(event)
 
       # update everything
       ticks = gameClock.get_time() / 1000
-      level.update(WORLD_SIZE, SCREEN_SIZE, ticks)
+      if phase[0] == LEVELS:
+          level.update(WORLD_SIZE, SCREEN_SIZE, ticks)
 
-      for door3 in level._elevator._parts["back"]:
-          clipper = level._blob.getCollideRect().clip(door3.getCollideRect())
-          if level._blob._FSM == "grounded" and clipper.width == 32:
-              endCount += 1
-              level._blob.handleEndLevel()
-              #print(blob._position)
-          #elif endCount > 30:
-              if level._blob._position.y < 0:
-                  level = LevelParser(LEVELS[nextLevel])
-                  nextLevel += 1
-                  if nextLevel > len(LEVELS) - 1:
-                      nextLevel = 0
+          if phase[0][phase[1]] != "level3.txt":
+              for door3 in level._elevator._parts["back"]:
+                  clipper = level._blob.getCollideRect().clip(door3.getCollideRect())
+                  if level._blob._FSM == "grounded" and clipper.width == 32:
+                      #endCount += 1
+                      level._blob.handleEndLevel()
+                      #print(blob._position)
+                  #elif endCount > 30:
+                      if level._blob._position.y < 0:
+                          phase = ORDER[nextPhase]
+                          if phase[0] == LEVELS:
+                              level = LevelParser(phase[0][phase[1]])
+                              level.loadLevel()
+                              WORLD_SIZE = level._worldsize
+                              level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
+                          elif phase[0] == MENUS:
+                              level = MenuParser(phase[0][phase[1]])
+                              level.loadMenu()
+                              WORLD_SIZE = level._worldsize
+                          nextPhase += 1
+                          if nextPhase > len(ORDER):
+                              nextPhase = 1
+
+          elif phase[0][phase[1]] == "level3.txt":
+              if level._ceiling.readyForNextLevel():
+                  phase = ORDER[nextPhase]
+                  if phase[0] == LEVELS:
+                      level = LevelParser(phase[0][phase[1]])
+                      level.loadLevel()
+                      WORLD_SIZE = level._worldsize
+                      level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
+                  elif phase[0] == MENUS:
+                      level = MenuParser(phase[0][phase[1]])
+                      level.loadMenu()
+                      WORLD_SIZE = level._worldsize
+                  nextPhase += 1
+                  if nextPhase > len(ORDER):
+                      nextPhase = 1
+
+
+      elif phase[0] == MENUS:
+          if level.madeSelection() and level.nextLevel():
+              selection = level.getSelection()
+              phase = ORDER[nextPhase]
+              if phase[0] == LEVELS:
+                  level = LevelParser(phase[0][phase[1]])
                   level.loadLevel()
-                  WORLD_SIZE = level._worldsize
-                  level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
+                  level._blob = Blob(Vector2(0,level._worldsize[1]-100-CHAR_SPRITE_SIZE.y),color=selection)
+              elif phase[0] == MENUS:
+                  level = MenuParser(phase[0][phase[1]])
+                  level.loadMenu()
+              nextPhase += 1
+              WORLD_SIZE = level._worldsize
+
 
 if __name__ == "__main__":
    main()

@@ -59,16 +59,21 @@ class FrameManager(object):
          "gaston.png": (30,40),
          "forcefield.png": (32,32),
          "font.png": (8,8),
+         "startbutton.png": (64,64),
+         "ceiling.png": (400,75),
+         "ceiling3.png": (400,75),
+         "ceiling4.png": (400,75),
+         "ceiling5.png": (400,75),
       }
 
       # A default frame size
       _DEFAULT_FRAME = (32,32)
 
       # A list of images that require to be loaded with transparency
-      _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png", "blob_selection.png"]
+      _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png", "blob_selection.png", "font.png", "ceiling.png", "ceiling3.png", "ceiling4.png", "ceiling5.png"]
 
       # A list of images that require to be loaded with a color key
-      _COLOR_KEY = ["blobs.png", "menu_blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "platform3.png", "platform4.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png", "font.png"]
+      _COLOR_KEY = ["blobs.png", "menu_blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "platform3.png", "platform4.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png", "startbutton.png"]
 
 
 

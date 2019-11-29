@@ -10,6 +10,7 @@ from characters.gaston import Gaston
 from modules.drawable import Drawable
 from characters.blob import Blob
 from characters.elevator import Elevator
+from characters.ceiling import Ceiling
 
 CHAR_SPRITE_SIZE = Vector2(32, 32)
 
@@ -25,6 +26,7 @@ class LevelParser:
         self._enemies = {"devil":[], "gaston": []}
         self._worldsize = (2400, 400)
         self._elevator = elevator = Elevator(Vector2(self._worldsize[0]-50,300), self._worldsize[1])
+        self._ceiling = Ceiling(Vector2(0, 0), final=False)
         self._deathCycle = 0
         self._keydown = {1:False, 2:False, 3:False}
 
@@ -56,7 +58,7 @@ class LevelParser:
         file.close()
         self.getWorldSize(fileContents)
         self._ground = Drawable(self.getGround(), Vector2(0, self._worldsize[1]-100), (0,0))
-        self._blob = Blob(Vector2(0,self._worldsize[1]-100-CHAR_SPRITE_SIZE.y))
+        self._blob = Blob(Vector2(0,self._worldsize[1]-100-CHAR_SPRITE_SIZE.y), color=self._blob._color)
         self.plantFlowers()
         self.getPlatforms(fileContents)
         self.getTraps(fileContents)
@@ -153,8 +155,11 @@ class LevelParser:
         for category10 in self._enemies:
             for enemy10 in self._enemies[category10]:
                 enemy10.draw(screen)
-        for back in self._elevator._parts["back"]:
-            back.draw(screen)
+        if self._filename != "level3.txt":
+            for back in self._elevator._parts["back"]:
+                back.draw(screen)
+        if self._filename == "level3.txt":
+            self._ceiling.draw(screen)
         self._blob.draw(screen)
         for zap in self._blob._zaps:
             if zap.isActive():
@@ -164,10 +169,11 @@ class LevelParser:
             else:
                 zap.incNotActive()
                 zap.draw(screen)
-        for part in self._elevator._parts:
-            if part != "back":
-                for section in self._elevator._parts[part]:
-                    section.draw(screen)
+        if self._filename != "level3.txt":
+            for part in self._elevator._parts:
+                if part != "back":
+                    for section in self._elevator._parts[part]:
+                        section.draw(screen)
         #elevator.draw(screen)
         if self._blob._forcefield.isActive():
             self._blob._forcefield.draw(screen)
@@ -208,6 +214,17 @@ class LevelParser:
          i = True
          blobPos = self._blob.getCollideRect()
          totalClipWidth = 0
+         if self._filename == "level3.txt":
+             if self._blob._position.y <= 25:
+                 self._blob.manageState("fall")
+                 if self._blob._velocity.y < 0:
+                     self._blob._velocity.y = -self._blob._velocity.y
+                     if self._blob._position.x <= 200:
+                         self._ceiling.incHP("left")
+                     elif self._blob._position.x > 200:
+                         self._ceiling.incHP("right")
+                 self._ceiling.updateVisual()
+                 print(self._ceiling._hp)
          for platform in self._platforms:
              platPos = platform.getCollideRect()
              clipRect2 = blobPos.clip(platPos)
@@ -338,6 +355,7 @@ class LevelParser:
                          zap15.handleEnd()
 
     def update(self, WORLD_SIZE, SCREEN_SIZE, ticks):
+        #print(self._blob._color)
         if self._keydown[1] == True and self._keydown[2] == True and self._keydown[3] == True:
             if self._filename != "level3.txt":
                 self._blob.update(WORLD_SIZE, ticks, cheat=True, horizontal=True)

@@ -154,6 +154,7 @@ class Blob(Mobile):
             y = 1
         else:
             y = 0
+        #print(self._offset)
         rect = pygame.Rect(self._offset[0], SPRITE_SIZE.y * y, SPRITE_SIZE.x, SPRITE_SIZE.y)
         self._image = pygame.Surface((rect.width,rect.height))
         self._image.blit(fullImage, (0,0), rect)
