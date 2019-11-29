@@ -94,7 +94,6 @@ class LevelParser:
             if info[0] == "platform":
                 for i in range(int(info[3])):
                     self._platforms.append(Drawable(platformImage, Vector2(int(info[1]) + 50*i, int(info[2])), (0,0)))
-        #print(len(self._platforms))
 
     def getTraps(self, fileContents):
         fileStuff = fileContents.split("\n")
@@ -224,7 +223,6 @@ class LevelParser:
                      elif self._blob._position.x > 200:
                          self._ceiling.incHP("right")
                  self._ceiling.updateVisual()
-                 print(self._ceiling._hp)
          for platform in self._platforms:
              platPos = platform.getCollideRect()
              clipRect2 = blobPos.clip(platPos)
@@ -288,7 +286,6 @@ class LevelParser:
                  for zap17 in self._blob._zaps:
                      if zap17.getCollideRect().colliderect(enemy17.getCollideRect()):
                          enemy17.handleCollision()
-                         #print(enemy17._hp)
                          zap17.handleDestroy()
                          if enemy17.isDead() and enemy17 in self._enemies[category17]:
                              self._enemies[category17].remove(enemy17)
@@ -355,7 +352,6 @@ class LevelParser:
                          zap15.handleEnd()
 
     def update(self, WORLD_SIZE, SCREEN_SIZE, ticks):
-        #print(self._blob._color)
         if self._keydown[1] == True and self._keydown[2] == True and self._keydown[3] == True:
             if self._filename != "level3.txt":
                 self._blob.update(WORLD_SIZE, ticks, cheat=True, horizontal=True)
@@ -375,7 +371,6 @@ class LevelParser:
             ring.update(WORLD_SIZE, ticks)
 
         if self._blob.isDead():
-            #print(deathCycle)
             if self._deathCycle > 30:
                 self.reset()
                 self.loadLevel()

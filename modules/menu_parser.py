@@ -61,7 +61,6 @@ class MenuParser:
                     self._selectionAreas.append(Drawable("blob_selection.png", Vector2(int(info[1]), int(info[2])), (selectionCount,0)))
                     blobXpos = int(info[1]) + SELECTION_SIZE.x//2 - BLOB_SIZE.x//2
                     blobYpos = int(info[2]) + SELECTION_SIZE.y//2  - BLOB_SIZE.y//2 - 14
-                    print(blobXpos, blobYpos)
                     self._blobs.append(Drawable("menu_blobs.png", Vector2(blobXpos, blobYpos), (selectionCount + 1,0)))
                     selectionCount += 1
 
@@ -93,9 +92,7 @@ class MenuParser:
                         numInAlph = aVal - 65
                         offsetY = numInAlph // 13
                         offsetX = numInAlph - 13*offsetY
-                        print(text[i] + ": (" + str(offsetX) + ", " + str(offsetY) + ") => (" + str(int(info[1]) + 8 * i) + ", " + str(int(info[2])) + ")")
                         self._text.append(Drawable("font.png", Vector2(int(xCenter) + 8 * i, int(info[2])), (2 + offsetX, 7 + offsetY)))
-        #print(self._text)
 
     def getWorldSize(self,fileContents):
         fileStuff = fileContents.split("\n")
@@ -132,7 +129,6 @@ class MenuParser:
                     color = "orange"
                 self._selectedBlob = color
                 self._ready = False
-        #print(self._selectedBlob)
         if self._startButton.getCollideRect().collidepoint(mousePos):
             self._ready = True
 

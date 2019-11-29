@@ -12,6 +12,7 @@ from modules.drawable import Drawable
 from modules.mobile import Mobile
 from characters.blobzap import BlobZap
 from characters.forcefield import Forcefield
+from modules.frameManager import FRAMES
 import os
 
 SPRITE_SIZE = Vector2(32, 32)
@@ -136,10 +137,10 @@ class Blob(Mobile):
                   self._velocity.scale(self._maxVelocity)
               #super().update(ticks)
       else:
-          if horizontal:
+          if horizontal and self._position.x < 1950:
               self._position.x = 1950
               self._position.y = 300 - 32
-          else:
+          elif not horizontal and self._position.y > 70:
               self._position.x = 50
               self._position.y = 70
 
@@ -150,15 +151,11 @@ class Blob(Mobile):
         #    y = 1
         if self._FSM.isJumping() or self._FSM.isFalling():
             y = 2
-        elif self._FSM.isGrounded and not self._alive:
+        elif self._FSM.isGrounded() and not self._alive:
             y = 1
         else:
             y = 0
-        #print(self._offset)
-        rect = pygame.Rect(self._offset[0], SPRITE_SIZE.y * y, SPRITE_SIZE.x, SPRITE_SIZE.y)
-        self._image = pygame.Surface((rect.width,rect.height))
-        self._image.blit(fullImage, (0,0), rect)
-        self._image.set_colorkey(self._image.get_at((0,0)))
+        self._image = FRAMES.getFrame(self._imageName, (self._offset[0],y))
 
     def move(self, event):
         """sets the values in the _movement dictionary based on which arrow keys

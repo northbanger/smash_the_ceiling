@@ -5,36 +5,17 @@ main.py
 
 TODO by end of Thanksgiving:
 
-make main shorter:
-    - completed: move everything to level manager
-
 forcefield and powerups:
     - follows the blob: completed
     - make drawing of forcefield and collision box bigger
     - need to create a new drawing
-
-levels:
-    - completed: different color schemes for different levels
-    - completed: one more level with original blob (vertical that goes to ceiling)
-    - one level with one of the other blobs
 
 boss enemy:
     - character that spawns mini blobs
     - have to avoid hitting the blobs: takes down wokeness meter or something like that
 
 smash animation:
-    - running toward trying to smash the ceiling unsuccessful
     - animation that shows that you have to train other blobs
-
-menus:
-    - completed: start menu
-    - completed: blob selection screen:
-        - three other blobs to select from
-        - once you click on one it takes you to next level with one of the blobs
-
-
-cheats to go to end of level:
-    - completed:cheat codes
 
 music and sound effects:
     - background music: the man by taylor swift, nightmare by halsey if possible
@@ -65,8 +46,7 @@ from modules.menu_parser import MenuParser
 SCREEN_SIZE = (400, 400)
 WORLD_SIZE = (2400, 400)
 CHAR_SPRITE_SIZE = Vector2(32, 32)
-LEVELS = ["level1.txt", "level2.txt", "level3.txt"]
-LEVELS_IN_PROGRESS = ["level4.txt"]
+LEVELS = ["level1.txt", "level2.txt", "level3.txt", "level4.txt"]
 MENUS = ["startmenu.txt", "blobmenu.txt"]
 ANIMATIONS = ["smash1.txt", "smash2.txt"]
 #5: ANIMATIONS, 0
@@ -90,7 +70,6 @@ def main():
    nextPhase = 1
 
    phase = ORDER[nextPhase]
-   print(phase[0][phase[1]])
 
    if phase[0] == LEVELS:
        current = LevelParser(phase[0][phase[1]])
@@ -126,7 +105,7 @@ def main():
    # define a variable to control the main loop
    RUNNING = True
 
-   #endCount = 0
+   endCount = 0
 
    # main loop
    while RUNNING:
@@ -184,7 +163,6 @@ def main():
                   if level._blob._FSM == "grounded" and clipper.width == 32:
                       #endCount += 1
                       level._blob.handleEndLevel()
-                      #print(blob._position)
                   #elif endCount > 30:
                       if level._blob._position.y < 0:
                           phase = ORDER[nextPhase]
@@ -202,20 +180,22 @@ def main():
                               nextPhase = 1
 
           elif phase[0][phase[1]] == "level3.txt":
-              if level._ceiling.readyForNextLevel():
-                  phase = ORDER[nextPhase]
-                  if phase[0] == LEVELS:
-                      level = LevelParser(phase[0][phase[1]])
-                      level.loadLevel()
-                      WORLD_SIZE = level._worldsize
-                      level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
-                  elif phase[0] == MENUS:
-                      level = MenuParser(phase[0][phase[1]])
-                      level.loadMenu()
-                      WORLD_SIZE = level._worldsize
-                  nextPhase += 1
-                  if nextPhase > len(ORDER):
-                      nextPhase = 1
+              if level._ceiling.readyForNextLevel() and level._blob._FSM.isPlatformed():
+                  endCount += 1
+                  if endCount > 150:
+                      phase = ORDER[nextPhase]
+                      if phase[0] == LEVELS:
+                          level = LevelParser(phase[0][phase[1]])
+                          level.loadLevel()
+                          WORLD_SIZE = level._worldsize
+                          level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
+                      elif phase[0] == MENUS:
+                          level = MenuParser(phase[0][phase[1]])
+                          level.loadMenu()
+                          WORLD_SIZE = level._worldsize
+                      nextPhase += 1
+                      if nextPhase > len(ORDER):
+                          nextPhase = 1
 
 
       elif phase[0] == MENUS:

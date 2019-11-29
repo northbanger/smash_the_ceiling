@@ -1,0 +1,19 @@
+world size,2400,400
+platform,250,225,5
+platform,550,250,6
+platform,700,175,3
+platform,825,100,4
+platform,900,225,7
+platform,1700,200,4
+platform,1250,145,5
+platform,1950,120,5
+platform,1400,260,5
+platform,2000,270,4
+trap,bra,750,250
+trap,bra,1525,260
+trap,pan,925,100
+trap,ring,1800,200
+trap,ring,775,175
+enemy,devil,900,225,3
+enemy,devil,1100,225,3
+enemy,gaston,650,250
