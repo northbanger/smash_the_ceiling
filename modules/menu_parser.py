@@ -12,6 +12,7 @@ from characters.blob import Blob
 from characters.elevator import Elevator
 
 CHAR_SPRITE_SIZE = Vector2(32, 32)
+SCALE = 2
 
 class MenuParser:
     def __init__(self, filename):
@@ -115,7 +116,7 @@ class MenuParser:
          if event.type == pygame.MOUSEBUTTONDOWN:
             #left click is 1
             if event.button == 1:
-                self.detectSelectedArea(list(event.pos))
+                self.detectSelectedArea(list([int(x/SCALE) for x in event.pos]))
 
     def detectSelectedArea(self, mousePos):
         for area in self._selectionAreas:

@@ -12,12 +12,6 @@ forcefield and powerups:
 
 smash animation:
     - animation that shows that you have to train other blobs
-
-music and sound effects:
-    - background music: the man by taylor swift, nightmare by halsey if possible
-
-make screen bigger for demo:
-    - upscale
 """
 
 
@@ -40,8 +34,11 @@ from modules.soundManager import SoundManager
 
 # screen size is the amount we show the player
 # world size is the size of the interactable world
-SCREEN_SIZE = (400, 400)
+#SCREEN_SIZE = (400, 400)
+SCREEN_SIZE = [400, 400]
 WORLD_SIZE = (2400, 400)
+SCALE = 2
+UPSCALED = [x * SCALE for x in SCREEN_SIZE]
 CHAR_SPRITE_SIZE = Vector2(32, 32)
 LEVELS = ["level1.txt", "level2.txt", "level3.txt", "level4.txt"]
 MENUS = ["startmenu.txt", "blobmenu.txt"]
@@ -59,7 +56,9 @@ def main():
    pygame.display.set_caption("Smash! the Ceiling")
 
    # creating the screen
-   screen = pygame.display.set_mode(SCREEN_SIZE)
+   #screen = pygame.display.set_mode(SCREEN_SIZE)
+   screen = pygame.display.set_mode(UPSCALED)
+   drawSurface = pygame.Surface(SCREEN_SIZE)
 
    platforms = []
    traps = []
@@ -69,24 +68,14 @@ def main():
    phase = ORDER[nextPhase]
 
    if phase[0] == LEVELS:
-       current = LevelParser(phase[0][phase[1]])
+       level = LevelParser(phase[0][phase[1]])
        level.loadLevel()
    elif phase[0] == MENUS:
        level = MenuParser(phase[0][phase[1]])
        level.loadMenu()
    #elif phase[0] = ANIMATIONS:
 
-   #level = LevelParser(LEVELS[0])
-   #level.loadLevel()
    WORLD_SIZE = level._worldsize
-
-   #background = Drawable("background.png", Vector2(0,0), (0,0))
-   #ground = Drawable("ground2.png", Vector2(0, 300), (0,0))
-
-   # initialize the blob on top of the ground
-   #blob = Blob(Vector2(0,300-CHAR_SPRITE_SIZE.y))
-
-   #elevator = Elevator(Vector2(WORLD_SIZE[0]-50,300), WORLD_SIZE[1])
 
    nextPhase += 1
 
@@ -125,11 +114,14 @@ def main():
 
 
       # draw everything based on the offset
-      #screen.blit(background, (-offset[0], -offset[1]))
       if phase[0] == LEVELS:
-          level.draw(screen)
+          #level.draw(screen)
+          level.draw(drawSurface)
+          pygame.transform.scale(drawSurface,UPSCALED,screen)
       elif phase[0] == MENUS:
-          level.draw(screen)
+          #level.draw(screen)
+          level.draw(drawSurface)
+          pygame.transform.scale(drawSurface,UPSCALED,screen)
 
       # flip display to the monitor
       pygame.display.flip()
@@ -160,9 +152,7 @@ def main():
               for door3 in level._elevator._parts["back"]:
                   clipper = level._blob.getCollideRect().clip(door3.getCollideRect())
                   if level._blob._FSM == "grounded" and clipper.width == 32:
-                      #endCount += 1
                       level._blob.handleEndLevel()
-                  #elif endCount > 30:
                       if level._blob._position.y < 0:
                           phase = ORDER[nextPhase]
                           if phase[0] == LEVELS:
