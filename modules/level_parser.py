@@ -11,6 +11,7 @@ from modules.drawable import Drawable
 from characters.blob import Blob
 from characters.elevator import Elevator
 from characters.ceiling import Ceiling
+from characters.boss import Boss
 
 CHAR_SPRITE_SIZE = Vector2(32, 32)
 
@@ -23,7 +24,7 @@ class LevelParser:
         self._decorations = []
         self._platforms = []
         self._traps = {"bra":[], "pan":[], "ring":[]}
-        self._enemies = {"devil":[], "gaston": []}
+        self._enemies = {"devil":[], "gaston": [], "boss": []}
         self._worldsize = (2400, 400)
         self._elevator = elevator = Elevator(Vector2(self._worldsize[0]-50,300), self._worldsize[1])
         self._ceiling = Ceiling(Vector2(0, 0), final=False)
@@ -69,7 +70,7 @@ class LevelParser:
         self._decorations = []
         self._platforms = []
         self._traps = {"bra":[], "pan":[], "ring":[]}
-        self._enemies = {"devil":[], "gaston": []}
+        self._enemies = {"devil":[], "gaston": [], "boss": []}
         self._deathCycle = 0
         self._keydown = {1:False, 2:False, 3:False}
 
@@ -116,6 +117,9 @@ class LevelParser:
                     self._enemies[info[1]].append(Devil(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y), int(info[4])))
                 elif info[1] == "gaston":
                     self._enemies[info[1]].append(Gaston(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y)))
+                elif info[1] == "boss":
+                    self._enemies[info[1]].append(Boss(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y-25)))
+
 
     def getWorldSize(self,fileContents):
         fileStuff = fileContents.split("\n")
@@ -194,6 +198,15 @@ class LevelParser:
                 else:
                     arrow15.incNotActive()
                     arrow15.draw(screen)
+        for bossie in self._enemies["boss"]:
+            for spawn in bossie._spawns:
+                if spawn.isActive():
+                    spawn.draw(screen)
+                elif spawn.notActive() > 15:
+                    bossie._spawns.remove(spawn)
+                else:
+                    spawn.incNotActive()
+                    spawn.draw(screen)
 
     def detectCollision(self):
          for category3 in self._traps:
@@ -294,7 +307,7 @@ class LevelParser:
              for enemy21 in self._enemies[category21]:
                  if self._blob.getCollideRect().colliderect(enemy21.getCollideRect()):
                      self._blob._velocity.x = -self._blob._velocity.x
-                     if category21 == "devil":
+                     if category21 == "devil" or category21 == "boss":
                          if not self._blob._forcefield.isActive():
                              self._blob.die()
 
@@ -311,6 +324,49 @@ class LevelParser:
                      if arrow50.getCollideRect().colliderect(blobZap50.getCollideRect()):
                          arrow50.handleDestroy()
                          blobZap50.handleDestroy()
+
+         for boss2 in self._enemies["boss"]:
+             for spawn2 in boss2._spawns:
+                 for blobZap200 in self._blob._zaps:
+                     if spawn2.getCollideRect().colliderect(blobZap200.getCollideRect()):
+                         spawn2.handleDestroy()
+                         blobZap200.handleDestroy()
+                         self._blob.die()
+         for boss3 in self._enemies["boss"]:
+             for spawn3 in boss3._spawns:
+                 if self._blob.getCollideRect().colliderect(spawn3.getCollideRect()):
+                      self._blob._velocity.x = -self._blob._velocity.x
+                      spawn3._velocity.x = -spawn3._velocity.x
+                      spawn3.handleBlobCollision()
+
+         for boss4 in self._enemies["boss"]:
+             for spawn4 in boss4._spawns:
+                 if boss4.getCollideRect().colliderect(spawn4.getCollideRect()) and spawn4._opposite == True:
+                     spawn4._velocity.x = 0
+                     spawn4.handleEnd()
+                     #spawn4.handleBlobCollision()
+
+         for boss5 in self._enemies["boss"]:
+             for spawn5a in boss5._spawns:
+                 for spawn5b in boss5._spawns:
+                     if spawn5a != spawn5b:
+                         if spawn5a.getCollideRect().colliderect(spawn5b.getCollideRect()):
+                             if spawn5a._opposite == False and spawn5b._opposite == True:
+                                 #if spawn5b._velocity.x == -spawn5a._velocity.x or spawn5a._velocity.x != 0:
+                                 spawn5b._velocity.x = spawn5a._velocity.x
+                                 spawn5b.handleBlobCollision()
+                             elif spawn5b._opposite == False and spawn5a._opposite == True:
+                                 #if spawn5b._velocity.x == -spawn5a._velocity.x  or spawn5b._velocity.x != 0:
+                                 spawn5a._velocity.x = spawn5b._velocity.x
+                                 spawn5a.handleBlobCollision()
+
+         for category57 in self._traps:
+             for trap57 in self._traps[category57]:
+                 for boss57 in self._enemies["boss"]:
+                     for spawn57 in boss57._spawns:
+                         if spawn57.getCollideRect().colliderect(trap57.getCollideRect()):
+                             spawn57.handleEnd()
+
 
          if self._blob._forcefield.isActive():
              for ring40 in self._traps["ring"]:
@@ -369,6 +425,8 @@ class LevelParser:
             gaston.update(WORLD_SIZE, ticks)
         for ring in self._traps["ring"]:
             ring.update(WORLD_SIZE, ticks)
+        for boss in self._enemies["boss"]:
+            boss.update(WORLD_SIZE, ticks)
 
         if self._blob.isDead():
             if self._deathCycle > 30:

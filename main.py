@@ -10,10 +10,6 @@ forcefield and powerups:
     - make drawing of forcefield and collision box bigger
     - need to create a new drawing
 
-boss enemy:
-    - character that spawns mini blobs
-    - have to avoid hitting the blobs: takes down wokeness meter or something like that
-
 smash animation:
     - animation that shows that you have to train other blobs
 

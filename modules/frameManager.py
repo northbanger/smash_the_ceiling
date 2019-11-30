@@ -64,6 +64,8 @@ class FrameManager(object):
          "ceiling3.png": (400,75),
          "ceiling4.png": (400,75),
          "ceiling5.png": (400,75),
+         "boss.png": (64,64),
+         "blob_spawns.png": (16,16),
       }
 
       # A default frame size
@@ -73,7 +75,7 @@ class FrameManager(object):
       _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png", "blob_selection.png", "font.png", "ceiling.png", "ceiling3.png", "ceiling4.png", "ceiling5.png"]
 
       # A list of images that require to be loaded with a color key
-      _COLOR_KEY = ["blobs.png", "menu_blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "platform3.png", "platform4.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png", "startbutton.png"]
+      _COLOR_KEY = ["blobs.png", "menu_blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "platform3.png", "platform4.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png", "startbutton.png", "boss.png", "blob_spawns.png"]
 
 
 

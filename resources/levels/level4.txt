@@ -17,3 +17,5 @@ trap,ring,775,175
 enemy,devil,900,225,3
 enemy,devil,1100,225,3
 enemy,gaston,650,250
+enemy,boss,400,300
+enemy,boss,1800,300
