@@ -35,6 +35,7 @@ from characters.elevator import Elevator
 from modules.drawable import Drawable
 from modules.level_parser import LevelParser
 from modules.menu_parser import MenuParser
+from modules.soundManager import SoundManager
 #from modules.gameManager import GameManager
 
 # screen size is the amount we show the player
@@ -102,6 +103,8 @@ def main():
    RUNNING = True
 
    endCount = 0
+
+   SoundManager.getInstance().playMusic("TheMan.ogg")
 
    # main loop
    while RUNNING:

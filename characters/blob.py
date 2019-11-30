@@ -14,6 +14,7 @@ from characters.blobzap import BlobZap
 from characters.forcefield import Forcefield
 from modules.frameManager import FRAMES
 import os
+from modules.soundManager import SoundManager
 
 SPRITE_SIZE = Vector2(32, 32)
 MAX_VELOCITY = 150
@@ -85,6 +86,7 @@ class Blob(Mobile):
             else:
                 zap = BlobZap(Vector2(self._position.x + SPRITE_SIZE.x, self._position.y + SPRITE_SIZE.y//2 - 6))
             self._zaps.append(zap)
+            SoundManager.getInstance().playSound("heart.ogg")
             zap.handleEvent(self._FSM.isFacing("left"))
 
       elif event.type == pygame.KEYUP:
