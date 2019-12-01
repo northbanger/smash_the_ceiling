@@ -1,0 +1,4 @@
+world size,400,400
+otherblobs,green,300,300
+otherblobs,blue,335,300
+otherblobs,orange,370,300

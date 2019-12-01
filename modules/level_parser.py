@@ -12,8 +12,10 @@ from characters.blob import Blob
 from characters.elevator import Elevator
 from characters.ceiling import Ceiling
 from characters.boss import Boss
+from characters.powerup import Floppy,Sign,Vote
 
 CHAR_SPRITE_SIZE = Vector2(32, 32)
+SCALE = 2
 
 class LevelParser:
     def __init__(self, filename):
@@ -25,20 +27,28 @@ class LevelParser:
         self._platforms = []
         self._traps = {"bra":[], "pan":[], "ring":[]}
         self._enemies = {"devil":[], "gaston": [], "boss": []}
+        self._powerups = {"floppy": [], "sign": [], "vote": []}
         self._worldsize = (2400, 400)
         self._elevator = elevator = Elevator(Vector2(self._worldsize[0]-50,300), self._worldsize[1])
         self._ceiling = Ceiling(Vector2(0, 0), final=False)
         self._deathCycle = 0
         self._keydown = {1:False, 2:False, 3:False}
+        self._otherblobs = []
+        self._otherblobsCollideRect = None
+        self._block = None
+        self._spot = None
+        self._activeBlobs = []
+        self._downbar = None
+        self._downbarSelections = []
 
     def getBackground(self):
         if self._filename == "level1.txt":
             backgroundImage = "background.png"
         elif self._filename == "level2.txt":
             backgroundImage = "background2.png"
-        elif self._filename == "level3.txt":
+        elif self._filename == "level3.txt" or self._filename == "level6.txt":
             backgroundImage = "background3b.png"
-        elif self._filename == "level4.txt":
+        elif self._filename == "level4.txt" or self._filename == "level5.txt":
             backgroundImage = "background4.png"
         return backgroundImage
 
@@ -47,9 +57,9 @@ class LevelParser:
             groundImage = "ground2.png"
         elif self._filename == "level2.txt":
             groundImage = "ground3.png"
-        elif self._filename == "level3.txt":
+        elif self._filename == "level3.txt" or self._filename == "level6.txt":
             groundImage = "ground4b.png"
-        elif self._filename == "level4.txt":
+        elif self._filename == "level4.txt" or self._filename == "level5.txt":
             groundImage = "ground5.png"
         return groundImage
 
@@ -59,9 +69,13 @@ class LevelParser:
         file.close()
         self.getWorldSize(fileContents)
         self._ground = Drawable(self.getGround(), Vector2(0, self._worldsize[1]-100), (0,0))
-        self._blob = Blob(Vector2(0,self._worldsize[1]-100-CHAR_SPRITE_SIZE.y), color=self._blob._color)
+        if self._filename != "level6.txt":
+            self._blob = Blob(Vector2(0,self._worldsize[1]-100-CHAR_SPRITE_SIZE.y), color=self._blob._color)
         self.plantFlowers()
         self.getPlatforms(fileContents)
+        self.getOtherBlobs(fileContents)
+        self.getActiveBlobs()
+        self.getPowerUps(fileContents)
         self.getTraps(fileContents)
         self.getEnemies(fileContents)
         self.getWorldSize(fileContents)
@@ -73,6 +87,12 @@ class LevelParser:
         self._enemies = {"devil":[], "gaston": [], "boss": []}
         self._deathCycle = 0
         self._keydown = {1:False, 2:False, 3:False}
+        self._powerups = {"floppy": [], "sign": [], "vote": []}
+        self._otherblobs = []
+        self._otherblobsCollideRect = None
+        self._block = None
+        self._spot = None
+        self._activeBlobs = []
 
     def plantFlowers(self):
         flowerSize = 16
@@ -85,9 +105,9 @@ class LevelParser:
             platformImage = "platform.png"
         elif self._filename == "level2.txt":
             platformImage = "platform2.png"
-        elif self._filename == "level3.txt":
+        elif self._filename == "level3.txt" or self._filename == "level6.txt":
             platformImage = "platform3.png"
-        elif self._filename == "level4.txt":
+        elif self._filename == "level4.txt" or self._filename == "level5.txt":
             platformImage = "platform4.png"
         fileStuff = fileContents.split("\n")
         for line in fileStuff:
@@ -95,6 +115,28 @@ class LevelParser:
             if info[0] == "platform":
                 for i in range(int(info[3])):
                     self._platforms.append(Drawable(platformImage, Vector2(int(info[1]) + 50*i, int(info[2])), (0,0)))
+
+    def getOtherBlobs(self, fileContents):
+        fileStuff = fileContents.split("\n")
+        for line in fileStuff:
+            info = line.split(",")
+            if info[0] == "otherblobs":
+                self._otherblobs.append(Blob(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y-50), color=info[1]))
+        if len(self._otherblobs) != 0:
+            self._otherblobsCollideRect = pygame.Rect(300,234,100,66)
+            self._block = Drawable("block.png", Vector2(300,250), (0,0))
+            self._spot = Drawable("ground.png", Vector2(250,300), (0,0))
+
+    def getActiveBlobs(self):
+        if self._filename == "level6.txt":
+            self._activeBlobs.append(Blob(Vector2(25,100-CHAR_SPRITE_SIZE.y), color="pink"))
+            self._activeBlobs.append(Blob(Vector2(25,self._worldsize[1]-100-CHAR_SPRITE_SIZE.y), color="blue"))
+            self._activeBlobs.append(Blob(Vector2(200,self._worldsize[1]-100-CHAR_SPRITE_SIZE.y), color="green"))
+            self._activeBlobs.append(Blob(Vector2(300,self._worldsize[1]-100-CHAR_SPRITE_SIZE.y), color="orange"))
+            self._blob = self._activeBlobs[0]
+            self._downbar = Drawable("downbar.png", Vector2(0,self._worldsize[1]-28), (0,0))
+            for i in range(4):
+                self._downbarSelections.append(Drawable("downbarselection.png", Vector2(i*28, self._worldsize[1]-28), (0,0)))
 
     def getTraps(self, fileContents):
         fileStuff = fileContents.split("\n")
@@ -120,6 +162,18 @@ class LevelParser:
                 elif info[1] == "boss":
                     self._enemies[info[1]].append(Boss(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y-25)))
 
+    def getPowerUps(self, fileContents):
+       fileStuff = fileContents.split("\n")
+       for line in fileStuff:
+           info = line.split(",")
+           if info[0] == "powerup":
+               if info[1] == "floppy":
+                   self._powerups["floppy"].append(Floppy(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y)))
+               elif info[1] == "sign":
+                   self._powerups["sign"].append(Sign(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y)))
+               elif info[1] == "vote":
+                   self._powerups["vote"].append(Vote(Vector2(int(info[2]),int(info[3])-CHAR_SPRITE_SIZE.y)))
+
 
     def getWorldSize(self,fileContents):
         fileStuff = fileContents.split("\n")
@@ -127,6 +181,20 @@ class LevelParser:
             info = line.split(",")
             if info[0] == "world size":
                 self._worldsize = (int(info[1]), int(info[2]))
+
+    def detectSelectedArea(self, mousePos):
+        for i in range(len(self._downbarSelections)):
+            if self._downbarSelections[i].getCollideRect().collidepoint(mousePos):
+                print("here")
+                #pink,blue,green,orange
+                if i == 0:
+                    self._blob = self._activeBlobs[0]
+                elif i == 1:
+                    self._blob = self._activeBlobs[1]
+                elif i == 2:
+                    self._blob = self._activeBlobs[2]
+                elif i == 3:
+                    self._blob = self._activeBlobs[3]
 
     def handleEvent(self, event):
         if event.type == pygame.KEYDOWN:
@@ -143,6 +211,9 @@ class LevelParser:
                self._keydown[2] = False
            if event.key == pygame.K_3:
                self._keydown[3] = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                self.detectSelectedArea(list([int(x/SCALE) for x in event.pos]))
         self._blob.handleEvent(event)
 
     def draw(self, screen):
@@ -152,6 +223,10 @@ class LevelParser:
             decoration.draw(screen)
         for platform2 in self._platforms:
             platform2.draw(screen)
+        if self._block != None:
+            self._block.draw(screen)
+        if self._spot != None:
+            self._spot.draw(screen)
         for category2 in self._traps:
             for trap2 in self._traps[category2]:
                 trap2.draw(screen)
@@ -161,8 +236,21 @@ class LevelParser:
         if self._filename != "level3.txt":
             for back in self._elevator._parts["back"]:
                 back.draw(screen)
-        if self._filename == "level3.txt":
+        if self._filename == "level3.txt" or self._filename == "level6.txt":
             self._ceiling.draw(screen)
+        for typie in self._powerups:
+            for powerup in self._powerups[typie]:
+                if powerup.isActive():
+                    powerup.draw(screen)
+                elif powerup.notActive() > 5:
+                    self._powerups[typie].remove(powerup)
+                else:
+                    powerup.incNotActive()
+                    powerup.draw(screen)
+        for b in self._otherblobs:
+            b.draw(screen)
+        for b2 in self._activeBlobs:
+            b2.draw(screen)
         self._blob.draw(screen)
         for zap in self._blob._zaps:
             if zap.isActive():
@@ -178,8 +266,8 @@ class LevelParser:
                     for section in self._elevator._parts[part]:
                         section.draw(screen)
         #elevator.draw(screen)
-        if self._blob._forcefield.isActive():
-            self._blob._forcefield.draw(screen)
+        #if self._blob._forcefield.isActive():
+        #    self._blob._forcefield.draw(screen)
         for ringy in self._traps["ring"]:
             for zappy in ringy._zaps:
                 if zappy.isActive():
@@ -207,6 +295,8 @@ class LevelParser:
                 else:
                     spawn.incNotActive()
                     spawn.draw(screen)
+        if self._downbar != None:
+            self._downbar.draw(screen)
 
     def detectCollision(self):
          for category3 in self._traps:
@@ -226,7 +316,7 @@ class LevelParser:
          i = True
          blobPos = self._blob.getCollideRect()
          totalClipWidth = 0
-         if self._filename == "level3.txt":
+         if self._filename == "level3.txt" or self._filename == "level6.txt":
              if self._blob._position.y <= 25:
                  self._blob.manageState("fall")
                  if self._blob._velocity.y < 0:
@@ -267,12 +357,12 @@ class LevelParser:
                      trap.handleCollision()
                      if category == "bra":
                          self._blob._velocity.x = -self._blob._velocity.x
-                         if not self._blob._forcefield.isActive():
+                         if not self._blob._forcefield:
                              self._blob.die()
                      elif category == "pan":
                          self._blob._velocity.x = -self._blob._velocity.x * 0.5
                          self._blob._velocity.y = -self._blob._velocity.y
-                         if not self._blob._forcefield.isActive():
+                         if not self._blob._forcefield:
                              self._blob.die()
                      elif category == "ring":
                          if blobPos[0] + blobPos[2] > trap.getCollideRect()[0] + trap.getCollideRect()[2]:
@@ -280,6 +370,23 @@ class LevelParser:
                          else:
                              self._blob._velocity.x = -100
                          self._blob._velocity.y = -self._blob._velocity.y
+
+         for powerupT1 in self._powerups["floppy"]:
+             if self._blob.getCollideRect().colliderect(powerupT1.getCollideRect()):
+                 powerupT1.handleEnd()
+                 self._blob.activateForcefield()
+
+         for powerupT2 in self._powerups["sign"]:
+             if self._blob.getCollideRect().colliderect(powerupT2.getCollideRect()):
+                 powerupT2.handleEnd()
+                 self._blob.increaseJumpTime()
+
+         for powerupT3 in self._powerups["vote"]:
+             if self._blob.getCollideRect().colliderect(powerupT3.getCollideRect()):
+                 powerupT3.handleEnd()
+                 self._blob.moveForward(self._filename)
+
+
 
          for category4 in self._traps:
              for trap4 in self._traps[category4]:
@@ -308,7 +415,7 @@ class LevelParser:
                  if self._blob.getCollideRect().colliderect(enemy21.getCollideRect()):
                      self._blob._velocity.x = -self._blob._velocity.x
                      if category21 == "devil" or category21 == "boss":
-                         if not self._blob._forcefield.isActive():
+                         if not self._blob._forcefield:
                              self._blob.die()
 
          for ring7 in self._traps["ring"]:
@@ -339,6 +446,13 @@ class LevelParser:
                       spawn3._velocity.x = -spawn3._velocity.x
                       spawn3.handleBlobCollision()
 
+         #for blob47 in self._otherblobs:
+         #if self._blob.getCollideRect().colliderect(blob47.getCollideRect()):
+         if self._otherblobsCollideRect != None:
+             if self._blob.getCollideRect().colliderect(self._otherblobsCollideRect):
+                 self._blob._velocity.x = -150
+                 self._blob._velocity.y = -self._blob._velocity.y
+
          for boss4 in self._enemies["boss"]:
              for spawn4 in boss4._spawns:
                  if boss4.getCollideRect().colliderect(spawn4.getCollideRect()) and spawn4._opposite == True:
@@ -368,29 +482,29 @@ class LevelParser:
                              spawn57.handleEnd()
 
 
-         if self._blob._forcefield.isActive():
+         if self._blob._forcefield:
              for ring40 in self._traps["ring"]:
                  for ringZap40 in ring40._zaps:
-                     if ringZap40.getCollideRect().colliderect(self._blob._forcefield.getCollideRect()):
+                     if ringZap40.getCollideRect().colliderect(self._blob.getCollideRect()):
                          ringZap40.handleDestroy()
 
              for gaston82 in self._enemies["gaston"]:
                  for arrow82 in gaston82._arrows:
-                     if arrow82.getCollideRect().colliderect(self._blob._forcefield.getCollideRect()):
+                     if arrow82.getCollideRect().colliderect(self._blob.getCollideRect()):
                          arrow82.handleDestroy()
 
          for ring20 in self._traps["ring"]:
              for zap20 in ring20._zaps:
                  if zap20.getCollideRect().colliderect(self._blob.getCollideRect()):
                      zap20.handleDestroy()
-                     if not self._blob._forcefield.isActive():
+                     if not self._blob._forcefield:
                          self._blob.die()
 
          for gaston64 in self._enemies["gaston"]:
              for arrow64 in gaston64._arrows:
                  if arrow64.getCollideRect().colliderect(self._blob.getCollideRect()):
                      arrow64.handleDestroy()
-                     if not self._blob._forcefield.isActive():
+                     if not self._blob._forcefield:
                          self._blob.die()
 
          for door in self._elevator._parts["doors"]:
@@ -408,8 +522,9 @@ class LevelParser:
                          zap15.handleEnd()
 
     def update(self, WORLD_SIZE, SCREEN_SIZE, ticks):
+        #print(self._blob._position)
         if self._keydown[1] == True and self._keydown[2] == True and self._keydown[3] == True:
-            if self._filename != "level3.txt":
+            if self._filename != "level3.txt" and self._filename != "level6.txt":
                 self._blob.update(WORLD_SIZE, ticks, cheat=True, horizontal=True)
             else:
                 self._blob.update(WORLD_SIZE, ticks, cheat=True, horizontal=False)
@@ -441,6 +556,10 @@ class LevelParser:
 
         # getting the offset of the of the star (our tracking object)
         Drawable.updateOffset(self._blob, SCREEN_SIZE, WORLD_SIZE)
+        if self._downbar != None:
+            self._downbar._position = Vector2(Drawable.WINDOW_OFFSET.x, Drawable.WINDOW_OFFSET.y + SCREEN_SIZE[1]-28)
+            for i in range(4):
+                self._downbarSelections[i]._position = Vector2(i*28 + Drawable.WINDOW_OFFSET.x, Drawable.WINDOW_OFFSET.y + SCREEN_SIZE[1]-28)
 
 
 

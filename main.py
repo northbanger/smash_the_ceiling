@@ -40,12 +40,12 @@ WORLD_SIZE = (2400, 400)
 SCALE = 2
 UPSCALED = [x * SCALE for x in SCREEN_SIZE]
 CHAR_SPRITE_SIZE = Vector2(32, 32)
-LEVELS = ["level1.txt", "level2.txt", "level3.txt", "level4.txt"]
+LEVELS = ["level6.txt", "level2.txt", "level3.txt", "level4.txt", "level5.txt", "level6.txt"]
 MENUS = ["startmenu.txt", "blobmenu.txt"]
 ANIMATIONS = ["smash1.txt", "smash2.txt"]
 #5: ANIMATIONS, 0
 #8: ANIMATIONS, 1
-ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(MENUS, 1), 6:(LEVELS, 3)}
+ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6:(MENUS, 1), 7:(LEVELS, 3), 8:(LEVELS, 5)}
 
 def main():
 
@@ -148,7 +148,7 @@ def main():
       if phase[0] == LEVELS:
           level.update(WORLD_SIZE, SCREEN_SIZE, ticks)
 
-          if phase[0][phase[1]] != "level3.txt":
+          if phase[0][phase[1]] != "level3.txt" and phase[0][phase[1]] != "level5.txt":
               for door3 in level._elevator._parts["back"]:
                   clipper = level._blob.getCollideRect().clip(door3.getCollideRect())
                   if level._blob._FSM == "grounded" and clipper.width == 32:
@@ -159,7 +159,8 @@ def main():
                               level = LevelParser(phase[0][phase[1]])
                               level.loadLevel()
                               WORLD_SIZE = level._worldsize
-                              level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
+                              if level._filename != "level6.txt":
+                                  level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
                           elif phase[0] == MENUS:
                               level = MenuParser(phase[0][phase[1]])
                               level.loadMenu()
@@ -173,11 +174,13 @@ def main():
                   endCount += 1
                   if endCount > 150:
                       phase = ORDER[nextPhase]
+                      endCount = 0
                       if phase[0] == LEVELS:
                           level = LevelParser(phase[0][phase[1]])
                           level.loadLevel()
                           WORLD_SIZE = level._worldsize
-                          level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
+                          if level._filename != "level6.txt":
+                              level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
                       elif phase[0] == MENUS:
                           level = MenuParser(phase[0][phase[1]])
                           level.loadMenu()
@@ -185,6 +188,25 @@ def main():
                       nextPhase += 1
                       if nextPhase > len(ORDER):
                           nextPhase = 1
+
+          elif phase[0][phase[1]] == "level5.txt":
+                if level._blob._position.x > 250:
+                    endCount += 1
+                    if endCount > 100:
+                        phase = ORDER[nextPhase]
+                        if phase[0] == LEVELS:
+                            level = LevelParser(phase[0][phase[1]])
+                            level.loadLevel()
+                            WORLD_SIZE = level._worldsize
+                            if level._filename != "level6.txt":
+                                level._blob = Blob(Vector2(0,WORLD_SIZE[1]-100-CHAR_SPRITE_SIZE.y),level._blob._color)
+                        elif phase[0] == MENUS:
+                            level = MenuParser(phase[0][phase[1]])
+                            level.loadMenu()
+                            WORLD_SIZE = level._worldsize
+                        nextPhase += 1
+                        if nextPhase > len(ORDER):
+                            nextPhase = 1
 
 
       elif phase[0] == MENUS:
@@ -194,7 +216,8 @@ def main():
               if phase[0] == LEVELS:
                   level = LevelParser(phase[0][phase[1]])
                   level.loadLevel()
-                  level._blob = Blob(Vector2(0,level._worldsize[1]-100-CHAR_SPRITE_SIZE.y),color=selection)
+                  if level._filename != "level6.txt":
+                      level._blob = Blob(Vector2(0,level._worldsize[1]-100-CHAR_SPRITE_SIZE.y),color=selection)
               elif phase[0] == MENUS:
                   level = MenuParser(phase[0][phase[1]])
                   level.loadMenu()

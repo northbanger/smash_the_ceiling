@@ -1,3 +1,11 @@
+"""
+A Singleton Frame Manager class
+Author: Professor Matthews
+
+Provides on-demand loading of images for a pygame program.
+
+"""
+
 import pygame
 from pygame import image, Surface, Rect
 from os.path import join
@@ -43,6 +51,7 @@ class FrameManager(object):
          "background3b.png": (400, 2400),
          "background4.png": (2400, 400),
          "background5.png": (400, 400),
+         "ground.png": (50,3),
          "ground2.png": (2400, 100),
          "ground3.png": (2400, 100),
          "ground4a.png": (2400, 100),
@@ -66,13 +75,20 @@ class FrameManager(object):
          "ceiling5.png": (400,75),
          "boss.png": (64,64),
          "blob_spawns.png": (16,16),
+         "powerup.png": (32,32),
+         "powerup2.png": (32,32),
+         "powerup3.png": (32,32),
+         "blobs_forcefield.png": (32,32),
+         "block.png": (100,50),
+         "downbar.png": (112,28),
+         "downbarselection.png": (28,28),
       }
 
       # A default frame size
       _DEFAULT_FRAME = (32,32)
 
       # A list of images that require to be loaded with transparency
-      _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png", "blob_selection.png", "font.png", "ceiling.png", "ceiling3.png", "ceiling4.png", "ceiling5.png"]
+      _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png", "blob_selection.png", "font.png", "ceiling.png", "ceiling3.png", "ceiling4.png", "ceiling5.png", "powerup.png", "powerup2.png", "powerup3.png", "blobs_forcefield.png", "downbar.png"]
 
       # A list of images that require to be loaded with a color key
       _COLOR_KEY = ["blobs.png", "menu_blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "platform3.png", "platform4.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png", "startbutton.png", "boss.png", "blob_spawns.png"]

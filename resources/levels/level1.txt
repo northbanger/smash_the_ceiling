@@ -20,3 +20,5 @@ trap,pan,675,150
 trap,ring,200,200
 trap,ring,800,225
 trap,ring,1750,300
+powerup,sign,650,275
+powerup,floppy,1575,200

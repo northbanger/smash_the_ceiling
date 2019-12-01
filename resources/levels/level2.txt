@@ -21,3 +21,6 @@ enemy,devil,1100,200,4
 enemy,gaston,200,300
 enemy,gaston,2300,300
 enemy,gaston,1400,250
+powerup,vote,1350,125
+powerup,floppy,675,75
+powerup,sign,525,150

@@ -19,6 +19,7 @@ from modules.soundManager import SoundManager
 SPRITE_SIZE = Vector2(32, 32)
 MAX_VELOCITY = 150
 ACCELERATION = 5.0
+STANDARD_JUMP = 0.75
 
 class Blob(Mobile):
 
@@ -42,12 +43,17 @@ class Blob(Mobile):
         self._acceleration = ACCELERATION
         self._movement = {pygame.K_UP: False, pygame.K_DOWN: False, pygame.K_LEFT: False, pygame.K_RIGHT: False}
         self._jumpTimer = 0
-        self._jumpTime = 0.75
+        self._jumpTime = STANDARD_JUMP
         self._vSpeed = 100
         self._jSpeed = 80
         self._zaps = []
         self._alive = True
-        self._forcefield = Forcefield(self._position, self._velocity)
+        self._forcefield = False#Forcefield(self._position, self._velocity)
+        self._forcefieldTime = 5
+        self._forcefieldTimer = 0
+        self._higher = False
+        self._highTime = 10
+        self._highTimer = 0
         self._endLevel = False
 
     # Public access to tell jumper to try to take some action, typically for collision
@@ -60,6 +66,20 @@ class Blob(Mobile):
 
     def isDead(self):
       return not self._alive
+
+    def activateForcefield(self):
+        self._forcefield = True
+
+    def increaseJumpTime(self):
+        self._higher = True
+        self._jumpTime = 1.5
+
+    def moveForward(self, levelFile):
+        if levelFile != "level3.txt":
+            self._position.x += 200
+
+        else:
+            self._position.y -= 200
 
     def handleEvent(self, event):
       # attempt to manage state based on keypresses
@@ -112,6 +132,20 @@ class Blob(Mobile):
         self._endLevel = True
 
     def update(self, worldInfo, ticks, cheat=False, horizontal=False):
+      if self._forcefield == True:
+          self._forcefieldTimer += ticks
+          if self._forcefieldTimer > self._forcefieldTime:
+              self._forcefieldTimer = 0
+              self._forcefield = False
+          self.updateVisual()
+      if self._higher == True:
+          self._highTimer += ticks
+          if self._highTimer > self._highTime:
+              self._highTimer = 0
+              self._jumpTime = STANDARD_JUMP
+              self._higher = False
+          self.updateVisual()
+
       if not cheat:
           if not self._endLevel:
               newPosition = self._position
@@ -148,16 +182,26 @@ class Blob(Mobile):
 
 
     def updateVisual(self):
-        fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
-        #if self._FSM.isDucking():
-        #    y = 1
-        if self._FSM.isJumping() or self._FSM.isFalling():
-            y = 2
-        elif self._FSM.isGrounded() and not self._alive:
-            y = 1
+        if self._forcefield:
+            fullImage = pygame.image.load(os.path.join("images", "blobs_forcefield.png")).convert()
+            #if self._FSM.isDucking():
+            #    y = 1
+            if self._FSM.isJumping() or self._FSM.isFalling():
+                y = 2
+            else:
+                y = 0
+            self._image = FRAMES.getFrame("blobs_forcefield.png", (self._offset[0],y))
         else:
-            y = 0
-        self._image = FRAMES.getFrame(self._imageName, (self._offset[0],y))
+            fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
+            #if self._FSM.isDucking():
+            #    y = 1
+            if self._FSM.isJumping() or self._FSM.isFalling():
+                y = 2
+            elif self._FSM.isGrounded() and not self._alive:
+                y = 1
+            else:
+                y = 0
+            self._image = FRAMES.getFrame(self._imageName, (self._offset[0],y))
 
     def move(self, event):
         """sets the values in the _movement dictionary based on which arrow keys
