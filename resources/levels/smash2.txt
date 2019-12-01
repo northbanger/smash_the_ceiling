@@ -1,0 +1,4 @@
+world size,400,400
+text,0,100,congratulations
+text,0,150,you have smashed the ceiling
+text,0,200,thank you for playing

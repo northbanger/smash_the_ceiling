@@ -29,6 +29,7 @@ from characters.elevator import Elevator
 from modules.drawable import Drawable
 from modules.level_parser import LevelParser
 from modules.menu_parser import MenuParser
+from modules.animation_parser import AnimationParser
 from modules.soundManager import SoundManager
 #from modules.gameManager import GameManager
 
@@ -40,12 +41,12 @@ WORLD_SIZE = (2400, 400)
 SCALE = 2
 UPSCALED = [x * SCALE for x in SCREEN_SIZE]
 CHAR_SPRITE_SIZE = Vector2(32, 32)
-LEVELS = ["level6.txt", "level2.txt", "level3.txt", "level4.txt", "level5.txt", "level6.txt"]
+LEVELS = ["level1.txt", "level2.txt", "level3.txt", "level4.txt", "level5.txt", "level6.txt"]
 MENUS = ["startmenu.txt", "blobmenu.txt"]
 ANIMATIONS = ["smash1.txt", "smash2.txt"]
 #5: ANIMATIONS, 0
 #8: ANIMATIONS, 1
-ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6:(MENUS, 1), 7:(LEVELS, 3), 8:(LEVELS, 5)}
+ORDER = {0: (ANIMATIONS, 1), 1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
 
 def main():
 
@@ -63,7 +64,7 @@ def main():
    platforms = []
    traps = []
 
-   nextPhase = 1
+   nextPhase = 0
 
    phase = ORDER[nextPhase]
 
@@ -73,6 +74,9 @@ def main():
    elif phase[0] == MENUS:
        level = MenuParser(phase[0][phase[1]])
        level.loadMenu()
+   elif phase[0] == ANIMATIONS:
+       level = AnimationParser(phase[0][phase[1]])
+       level.loadAnimation()
    #elif phase[0] = ANIMATIONS:
 
    WORLD_SIZE = level._worldsize
@@ -122,6 +126,10 @@ def main():
           #level.draw(screen)
           level.draw(drawSurface)
           pygame.transform.scale(drawSurface,UPSCALED,screen)
+      elif phase[0] == ANIMATIONS:
+          #level.draw(screen)
+          level.draw(drawSurface)
+          pygame.transform.scale(drawSurface,UPSCALED,screen)
 
       # flip display to the monitor
       pygame.display.flip()
@@ -148,7 +156,7 @@ def main():
       if phase[0] == LEVELS:
           level.update(WORLD_SIZE, SCREEN_SIZE, ticks)
 
-          if phase[0][phase[1]] != "level3.txt" and phase[0][phase[1]] != "level5.txt":
+          if phase[0][phase[1]] != "level3.txt" and phase[0][phase[1]] != "level5.txt" and phase[0][phase[1]] != "level6.txt":
               for door3 in level._elevator._parts["back"]:
                   clipper = level._blob.getCollideRect().clip(door3.getCollideRect())
                   if level._blob._FSM == "grounded" and clipper.width == 32:
@@ -165,12 +173,16 @@ def main():
                               level = MenuParser(phase[0][phase[1]])
                               level.loadMenu()
                               WORLD_SIZE = level._worldsize
+                          elif phase[0] == ANIMATIONS:
+                              level = AnimationParser(phase[0][phase[1]])
+                              level.loadAnimation()
+                              WORLD_SIZE = level._worldsize
                           nextPhase += 1
                           if nextPhase > len(ORDER):
                               nextPhase = 1
 
-          elif phase[0][phase[1]] == "level3.txt":
-              if level._ceiling.readyForNextLevel() and level._blob._FSM.isPlatformed():
+          elif phase[0][phase[1]] == "level3.txt" or phase[0][phase[1]] == "level6.txt":
+              if level._ceiling.readyForNextLevel():
                   endCount += 1
                   if endCount > 150:
                       phase = ORDER[nextPhase]
@@ -184,6 +196,10 @@ def main():
                       elif phase[0] == MENUS:
                           level = MenuParser(phase[0][phase[1]])
                           level.loadMenu()
+                          WORLD_SIZE = level._worldsize
+                      elif phase[0] == ANIMATIONS:
+                          level = AnimationParser(phase[0][phase[1]])
+                          level.loadAnimation()
                           WORLD_SIZE = level._worldsize
                       nextPhase += 1
                       if nextPhase > len(ORDER):
@@ -204,6 +220,10 @@ def main():
                             level = MenuParser(phase[0][phase[1]])
                             level.loadMenu()
                             WORLD_SIZE = level._worldsize
+                        elif phase[0] == ANIMATIONS:
+                            level = AnimationParser(phase[0][phase[1]])
+                            level.loadAnimation()
+                            WORLD_SIZE = level._worldsize
                         nextPhase += 1
                         if nextPhase > len(ORDER):
                             nextPhase = 1
@@ -221,8 +241,31 @@ def main():
               elif phase[0] == MENUS:
                   level = MenuParser(phase[0][phase[1]])
                   level.loadMenu()
+              elif phase[0] == ANIMATIONS:
+                  level = AnimationParser(phase[0][phase[1]])
+                  level.loadAnimation()
               nextPhase += 1
               WORLD_SIZE = level._worldsize
+
+      elif phase[0] == ANIMATIONS:
+          level.update(ticks)
+          if level.nextLevel():
+              phase = ORDER[nextPhase]
+              if phase[0] == LEVELS:
+                  level = LevelParser(phase[0][phase[1]])
+                  level.loadLevel()
+                  if level._filename != "level6.txt":
+                      level._blob = Blob(Vector2(0,level._worldsize[1]-100-CHAR_SPRITE_SIZE.y),color=selection)
+              elif phase[0] == MENUS:
+                  level = MenuParser(phase[0][phase[1]])
+                  level.loadMenu()
+              elif phase[0] == ANIMATIONS:
+                  level = AnimationParser(phase[0][phase[1]])
+                  level.loadAnimation()
+              nextPhase += 1
+              WORLD_SIZE = level._worldsize
+
+
 
 
 if __name__ == "__main__":

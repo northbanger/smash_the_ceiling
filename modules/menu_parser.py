@@ -12,7 +12,10 @@ from characters.blob import Blob
 from characters.elevator import Elevator
 
 CHAR_SPRITE_SIZE = Vector2(32, 32)
+SCREEN_SIZE = [200,200]
 SCALE = 2
+SCALE2 = 2
+UPSCALED = [x * SCALE2 for x in SCREEN_SIZE]
 
 class MenuParser:
     def __init__(self, filename):
@@ -86,7 +89,7 @@ class MenuParser:
             info = line.split(",")
             if info[0] == "text":
                 text = info[3].upper()
-                xCenter = (self._worldsize[0] + int(info[1]))/2 - (len(text)//2 * 8)
+                xCenter = (self._worldsize[0] + int(info[1]))/4 - (len(text)//2 * 8)
                 for i in range(len(text)):
                     if text[i] != " ":
                         aVal = ord(text[i])
@@ -103,13 +106,18 @@ class MenuParser:
                 self._worldsize = (int(info[1]), int(info[2]))
 
     def draw(self, screen):
-        self._background.draw(screen)
+        drawSurface = pygame.Surface(SCREEN_SIZE)
+        self._background.draw(drawSurface)
+        for letter in self._text:
+            #letter.draw(screen)
+            letter.draw(drawSurface)
+        pygame.transform.scale(drawSurface,UPSCALED,screen)
         for area in self._selectionAreas:
             area.draw(screen)
         for blob in self._blobs:
             blob.draw(screen)
-        for letter in self._text:
-            letter.draw(screen)
+        #for letter in self._text:
+        #    letter.draw(screen)
         self._startButton.draw(screen)
 
     def handleEvent(self, event):

@@ -30,7 +30,12 @@ class LevelParser:
         self._powerups = {"floppy": [], "sign": [], "vote": []}
         self._worldsize = (2400, 400)
         self._elevator = elevator = Elevator(Vector2(self._worldsize[0]-50,300), self._worldsize[1])
-        self._ceiling = Ceiling(Vector2(0, 0), final=False)
+        if self._filename == "level3.txt":
+            self._ceiling = Ceiling(Vector2(0, 0), final=False)
+        elif self._filename == "level6.txt":
+            self._ceiling = Ceiling(Vector2(0, 0), final=True)
+        else:
+            self._ceiling = None
         self._deathCycle = 0
         self._keydown = {1:False, 2:False, 3:False}
         self._otherblobs = []
@@ -40,6 +45,7 @@ class LevelParser:
         self._activeBlobs = []
         self._downbar = None
         self._downbarSelections = []
+        self._selectCount = 0
 
     def getBackground(self):
         if self._filename == "level1.txt":
@@ -184,19 +190,26 @@ class LevelParser:
 
     def detectSelectedArea(self, mousePos):
         for i in range(len(self._downbarSelections)):
+            #print(mousePos)
+            #print()
+            #print(Drawable.WINDOW_OFFSET)
             if self._downbarSelections[i].getCollideRect().collidepoint(mousePos):
-                print("here")
                 #pink,blue,green,orange
                 if i == 0:
+                    #print("yes")
                     self._blob = self._activeBlobs[0]
                 elif i == 1:
+                    #print("yes")
                     self._blob = self._activeBlobs[1]
                 elif i == 2:
+                    #print("yes")
                     self._blob = self._activeBlobs[2]
                 elif i == 3:
+                    #print("yes")
                     self._blob = self._activeBlobs[3]
 
     def handleEvent(self, event):
+        #print(event.type)
         if event.type == pygame.KEYDOWN:
            if event.key == pygame.K_1:
                self._keydown[1] = True
@@ -212,8 +225,12 @@ class LevelParser:
            if event.key == pygame.K_3:
                self._keydown[3] = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                self.detectSelectedArea(list([int(x/SCALE) for x in event.pos]))
+            if event.button == 1: #and self._selectCount == 0:
+                mousePos = list([int(x/SCALE) for x in event.pos])
+                #print(mousePos)
+                adjustedPos = Drawable.adjustMousePos(mousePos)
+                #print(adjustedPos)
+                self.detectSelectedArea((adjustedPos.x, adjustedPos.y))
         self._blob.handleEvent(event)
 
     def draw(self, screen):
@@ -316,7 +333,8 @@ class LevelParser:
          i = True
          blobPos = self._blob.getCollideRect()
          totalClipWidth = 0
-         if self._filename == "level3.txt" or self._filename == "level6.txt":
+
+         if self._filename == "level3.txt":
              if self._blob._position.y <= 25:
                  self._blob.manageState("fall")
                  if self._blob._velocity.y < 0:
@@ -325,6 +343,17 @@ class LevelParser:
                          self._ceiling.incHP("left")
                      elif self._blob._position.x > 200:
                          self._ceiling.incHP("right")
+                 self._ceiling.updateVisual()
+
+         if self._filename == "level6.txt":
+             if self._blob._position.y <= 25:
+                 self._blob.manageState("fall")
+                 if self._blob._velocity.y < 0:
+                     self._blob._velocity.y = -self._blob._velocity.y
+                     if self._blob._position.x <= 200 and self._activeBlobs[0]._position.y < 150 and self._activeBlobs[1]._position.y < 150 and self._activeBlobs[1]._position.y < 150 and self._activeBlobs[1]._position.y < 150:
+                         self._ceiling.incHP("left", self._blob._color)
+                     elif self._blob._position.x > 200 and self._activeBlobs[0]._position.y < 150 and self._activeBlobs[1]._position.y < 150 and self._activeBlobs[1]._position.y < 150 and self._activeBlobs[1]._position.y < 150:
+                         self._ceiling.incHP("right", self._blob._color)
                  self._ceiling.updateVisual()
          for platform in self._platforms:
              platPos = platform.getCollideRect()
@@ -446,6 +475,12 @@ class LevelParser:
                       spawn3._velocity.x = -spawn3._velocity.x
                       spawn3.handleBlobCollision()
 
+         for b4 in self._activeBlobs:
+             if b4 != self._blob:
+                 if self._blob.getCollideRect().colliderect(b4.getCollideRect()):
+                     self._blob._velocity.x = -self._blob._velocity.x
+                     self._blob._velocity.y = -self._blob._velocity.y
+
          #for blob47 in self._otherblobs:
          #if self._blob.getCollideRect().colliderect(blob47.getCollideRect()):
          if self._otherblobsCollideRect != None:
@@ -512,6 +547,12 @@ class LevelParser:
                  if zap102.getCollideRect().colliderect(door.getCollideRect()):
                      zap102.handleEnd()
 
+         for typie811 in self._powerups:
+             for powerup811 in self._powerups[typie811]:
+                 for zap811 in self._blob._zaps:
+                     if zap811.getCollideRect().colliderect(powerup811.getCollideRect()):
+                         zap811.handleEnd()
+
          for platform3 in self._platforms:
              for zap5 in self._blob._zaps:
                  if zap5.getCollideRect().colliderect(platform3.getCollideRect()):
@@ -543,6 +584,9 @@ class LevelParser:
         for boss in self._enemies["boss"]:
             boss.update(WORLD_SIZE, ticks)
 
+        if self._filename == "level6.txt" and self._ceiling.readyForNextLevel():
+            self._ceiling.update(ticks)
+
         if self._blob.isDead():
             if self._deathCycle > 30:
                 self.reset()
@@ -560,6 +604,7 @@ class LevelParser:
             self._downbar._position = Vector2(Drawable.WINDOW_OFFSET.x, Drawable.WINDOW_OFFSET.y + SCREEN_SIZE[1]-28)
             for i in range(4):
                 self._downbarSelections[i]._position = Vector2(i*28 + Drawable.WINDOW_OFFSET.x, Drawable.WINDOW_OFFSET.y + SCREEN_SIZE[1]-28)
+                #print(self._downbarSelections[i]._position)
 
 
 

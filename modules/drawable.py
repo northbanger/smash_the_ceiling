@@ -58,3 +58,9 @@ class Drawable(object):
                         worldSize[1] - screenSize[1]))
        # update the WINDOW_OFFSET class variable
        Drawable.WINDOW_OFFSET = offset
+
+   @classmethod
+   def adjustMousePos(cls, mousePos):
+       """adjusts the mouse position on screen to coordinates within the wider world"""
+       adjustedPos = [mousePos[0] + Drawable.WINDOW_OFFSET[0], mousePos[1] + Drawable.WINDOW_OFFSET[1]]
+       return Vector2(adjustedPos[0], adjustedPos[1])
