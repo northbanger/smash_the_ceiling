@@ -65,7 +65,7 @@ class SoundManager(object):
             self.stopMusic()
 
          pygame.mixer.music.load(os.path.join(SoundManager._SM._MUSIC_FOLDER, fileName))
-         pygame.mixer.music.play()
+         pygame.mixer.music.play(loops=loop)
 
          self._musicStatus = "play"
 

@@ -46,7 +46,7 @@ MENUS = ["startmenu.txt", "blobmenu.txt"]
 ANIMATIONS = ["smash1.txt", "smash2.txt"]
 #5: ANIMATIONS, 0
 #8: ANIMATIONS, 1
-ORDER = {0: (ANIMATIONS, 1), 1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
+ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
 
 def main():
 
@@ -64,7 +64,7 @@ def main():
    platforms = []
    traps = []
 
-   nextPhase = 0
+   nextPhase = 1
 
    phase = ORDER[nextPhase]
 
@@ -97,7 +97,7 @@ def main():
 
    endCount = 0
 
-   SoundManager.getInstance().playMusic("TheMan.ogg")
+   SoundManager.getInstance().playMusic("TheMan.ogg", loop=-1)
 
    # main loop
    while RUNNING:

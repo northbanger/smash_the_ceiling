@@ -75,10 +75,11 @@ class Blob(Mobile):
         self._jumpTime = 1.5
 
     def moveForward(self, levelFile):
-        if levelFile != "level3.txt":
+        if levelFile != "level3.txt" and levelFile != "level6.txt":
             self._position.x += 200
 
         else:
+            self._position.x = 0
             self._position.y -= 200
 
     def handleEvent(self, event):
