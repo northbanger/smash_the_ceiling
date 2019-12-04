@@ -1,3 +1,10 @@
+"""
+Abby Nason
+smash! the ceiling
+blobzap.py
+
+Creates a boss enemy that pits other women against the blob.
+"""
 import pygame
 import os
 from modules.vector2D import Vector2
@@ -11,6 +18,7 @@ SPRITE_SIZE = Vector2(30,40)
 
 class Boss(Animated):
     def __init__(self, position):
+        """intializes a boss enemy"""
         position.y -= 6
         super().__init__("boss.png", position, (0,0))
         self._originalPosition = position
@@ -23,17 +31,21 @@ class Boss(Animated):
         self._hp = 500
 
     def handleCollision(self):
+        """decreases hit points when collision happens"""
         self._hp -= 1
 
     def isDead(self):
+        """determines if enemy is dead"""
         return self._hp <= 0
 
     def getCollideRect(self):
+       """decreases collide rect size"""
        newRect =  self._position + self._image.get_rect()
        newRect = pygame.Rect(self._position.x + 5, self._position.y + 25, SPRITE_SIZE.x - 1, SPRITE_SIZE.y)
        return newRect
 
     def update(self, worldInfo, ticks):
+        """updates the boss animation and the positions of its spawns"""
         super().update(ticks, True)
         for blob in self._spawns:
             blob.update(worldInfo, ticks)

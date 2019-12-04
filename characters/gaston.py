@@ -1,3 +1,10 @@
+"""
+Abby Nason
+smash! the ceiling
+gaston.py
+
+Create the gaston enemy.
+"""
 import pygame
 import os
 from modules.vector2D import Vector2
@@ -11,6 +18,7 @@ SPRITE_SIZE = Vector2(30,40)
 
 class Gaston(Animated):
     def __init__(self, position):
+        """intializes a gaston object"""
         position.y -= 6
         super().__init__("gaston.png", position, (1,1))
         self._originalPosition = position
@@ -23,12 +31,15 @@ class Gaston(Animated):
         self._hp = 50
 
     def handleCollision(self):
+       """decreases hit points if collided with"""
        self._hp -= 1
 
     def isDead(self):
+        """kills gaston"""
         return self._hp <= 0
 
     def update(self, worldInfo, ticks):
+        """updates gaston's animation and the movement of the arrows"""
         super().update(ticks, True)
         for arrow in self._arrows:
             arrow.update(worldInfo, ticks)

@@ -1,3 +1,10 @@
+"""
+Professor Matthews and Abby Nason
+smash! the ceiling
+drawable.py
+
+Creates an drawable object.
+"""
 import pygame
 from pygame import image
 import os
@@ -8,6 +15,7 @@ class Drawable(object):
    WINDOW_OFFSET = [0,0]
 
    def __init__(self, imageName, position, offset=None):
+      """initializes a drawable object"""
       self._imageName = imageName
 
       # Let frame manager handle loading the image
@@ -16,15 +24,19 @@ class Drawable(object):
       self._position = position
 
    def getPosition(self):
+      """returns the position of the drawable object"""
       return self._position
 
    def setPosition(self, newPosition):
+      """sets the position of the drawable object"""
       self._position = newPosition
 
    def getSize(self):
+      """returns the size of the image"""
       return self._image.get_size()
 
    def getCollideRect(self):
+      """return the collide rect"""
       newRect =  self._position + self._image.get_rect()
       return newRect
 

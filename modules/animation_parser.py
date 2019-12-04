@@ -1,3 +1,11 @@
+"""
+Abby Nason
+smash! the ceiling
+animation_parser.py
+
+Parses the animation layout file and creates the level.
+"""
+
 import pygame
 import os
 import random
@@ -18,6 +26,7 @@ UPSCALED = [int(x * SCALE2) for x in SCREEN_SIZE]
 
 class AnimationParser:
     def __init__(self, filename):
+        """intializes an animation"""
         self._filename = filename
         self._background = Drawable(self.getBackground(), Vector2(0,0), (0,0))
         self._worldsize = (400, 400)
@@ -27,6 +36,7 @@ class AnimationParser:
         self._ready = False
 
     def getBackground(self):
+        """returns the appropriate background image"""
         if self._filename == "smash1.txt":
             backgroundImage = "background.png"
         elif self._filename == "smash2.txt":
@@ -34,6 +44,7 @@ class AnimationParser:
         return backgroundImage
 
     def loadAnimation(self):
+        """controls the loading of the animation"""
         file = open(os.path.join("resources", "levels", self._filename))
         fileContents = file.read()
         file.close()
@@ -41,10 +52,12 @@ class AnimationParser:
         self.getText(fileContents)
 
     def reset(self):
+        """resets an animation"""
         self._text = []
         self._animationTimer = 0
 
     def getText(self, fileContents):
+        """gets the image for each letter in the text given in the layout file"""
         fileStuff = fileContents.split("\n")
         #text,xval,yval,words
         #line 0 starts at A (first letter): ascii 65
@@ -64,6 +77,7 @@ class AnimationParser:
                         self._text.append(Drawable("font.png", Vector2(int(xCenter) + 8 * i, int(info[2])), (2 + offsetX, 7 + offsetY)))
 
     def getWorldSize(self,fileContents):
+        """parses the animation layout file for the world size (vertical or horizontal)"""
         fileStuff = fileContents.split("\n")
         for line in fileStuff:
             info = line.split(",")
@@ -71,6 +85,7 @@ class AnimationParser:
                 self._worldsize = (int(info[1]), int(info[2]))
 
     def draw(self, screen):
+        """draws everything in the animation"""
         drawSurface = pygame.Surface(SCREEN_SIZE)
         self._background.draw(drawSurface)
         #self._background.draw(screen)
@@ -82,9 +97,12 @@ class AnimationParser:
         pygame.transform.scale(drawSurface,UPSCALED,screen)
 
     def nextLevel(self):
+        """return if the menu is ready for the next level"""
         return self._ready
 
     def update(self, ticks):
+        """updates the amount of time the animation has been on the screen
+        and determines if we are ready for the next phase"""
         self._animationTimer += ticks
         if self._animationTimer > self._animationTime:
             self._ready = True

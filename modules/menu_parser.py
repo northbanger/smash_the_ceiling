@@ -1,3 +1,11 @@
+"""
+Abby Nason
+smash! the ceiling
+menu_parser.py
+
+Parses the menu layout file and creates the level.
+"""
+
 import pygame
 import os
 import random
@@ -19,6 +27,7 @@ UPSCALED = [x * SCALE2 for x in SCREEN_SIZE]
 
 class MenuParser:
     def __init__(self, filename):
+        """intializes a menu"""
         self._filename = filename
         self._background = Drawable(self.getBackground(), Vector2(0,0), (0,0))
         self._worldsize = (400, 400)
@@ -30,6 +39,7 @@ class MenuParser:
         self._startButton = None
 
     def getBackground(self):
+        """returns the appropriate background image"""
         if self._filename == "startmenu.txt":
             backgroundImage = "background.png"
         elif self._filename == "blobmenu.txt":
@@ -37,6 +47,7 @@ class MenuParser:
         return backgroundImage
 
     def loadMenu(self):
+        """controls the loading of the level"""
         file = open(os.path.join("resources", "levels", self._filename))
         fileContents = file.read()
         file.close()
@@ -46,6 +57,7 @@ class MenuParser:
         self.getText(fileContents)
 
     def reset(self):
+        """resets a menu"""
         self._selectionAreas = []
         self._blobs = []
         self._text = []
@@ -53,10 +65,10 @@ class MenuParser:
         self._selectedBlob = None
 
     def getBlobSelectionAreas(self, fileContents):
+        """loads in the selection areas for choosing a blob to play with on a menu"""
         SELECTION_SIZE = Vector2(112, 112)
         BLOB_SIZE = Vector2(64, 64)
         fileStuff = fileContents.split("\n")
-        #selection,xval,yval
         selectionCount = 0
         for line in fileStuff:
             info = line.split(",")
@@ -69,6 +81,7 @@ class MenuParser:
                     selectionCount += 1
 
     def getStartButton(self, fileContents):
+        """creates a start button with the given position"""
         fileStuff = fileContents.split("\n")
         #selection,xval,yval
         selectionCount = 0
@@ -80,6 +93,7 @@ class MenuParser:
 
 
     def getText(self, fileContents):
+        """gets the image for each letter in the text given in the layout file"""
         fileStuff = fileContents.split("\n")
         #text,xval,yval,words
         #line 0 starts at A (first letter): ascii 65
@@ -99,6 +113,7 @@ class MenuParser:
                         self._text.append(Drawable("font.png", Vector2(int(xCenter) + 8 * i, int(info[2])), (2 + offsetX, 7 + offsetY)))
 
     def getWorldSize(self,fileContents):
+        """parses the menu layout file for the world size (vertical or horizontal)"""
         fileStuff = fileContents.split("\n")
         for line in fileStuff:
             info = line.split(",")
@@ -106,27 +121,28 @@ class MenuParser:
                 self._worldsize = (int(info[1]), int(info[2]))
 
     def draw(self, screen):
+        """draws everything in the menu"""
         drawSurface = pygame.Surface(SCREEN_SIZE)
         self._background.draw(drawSurface)
+        #upscale the text
         for letter in self._text:
-            #letter.draw(screen)
             letter.draw(drawSurface)
         pygame.transform.scale(drawSurface,UPSCALED,screen)
         for area in self._selectionAreas:
             area.draw(screen)
         for blob in self._blobs:
             blob.draw(screen)
-        #for letter in self._text:
-        #    letter.draw(screen)
         self._startButton.draw(screen)
 
     def handleEvent(self, event):
+         """handles a mouse click event"""
          if event.type == pygame.MOUSEBUTTONDOWN:
             #left click is 1
             if event.button == 1:
                 self.detectSelectedArea(list([int(x/SCALE) for x in event.pos]))
 
     def detectSelectedArea(self, mousePos):
+        """determines which blob was selected based on the mouse position"""
         for area in self._selectionAreas:
             positionBox = area.getCollideRect()
             if positionBox.collidepoint(mousePos):
@@ -143,6 +159,8 @@ class MenuParser:
 
 
     def madeSelection(self):
+        """determines if a blob has been selected before moving on
+        to the next phase"""
         if self._filename == "startmenu.txt":
             self._selectedBlob = "pink"
             return True
@@ -152,9 +170,11 @@ class MenuParser:
             return False
 
     def getSelection(self):
+        """return the selected blob to initialize the next level"""
         return self._selectedBlob
 
     def nextLevel(self):
+        """return if the menu is ready for the next level"""
         return self._ready
 
 

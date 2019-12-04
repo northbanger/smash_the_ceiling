@@ -1,3 +1,10 @@
+"""
+Abby Nason
+smash! the ceiling
+blobzap.py
+
+Creates a heart which the blob shoots.
+"""
 import pygame
 from modules.vector2D import Vector2
 from modules.drawable import Drawable
@@ -12,15 +19,11 @@ ZAP_RANGE = 50
 class BlobZap(Mobile):
 
     def __init__(self, position):
-        """initializes to orb class by inheriting from the Drawable class and
-        with instance variables: _velocity, _maxVelocity, _acceleration, and _movement"""
-        #super().__init__("blobs.png", position, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y)) #, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y), True)
+        """initializes a blob zap"""
         super().__init__("nuts_and_milk.png", position, (11,1))
         #a vector2 of its velocity
         self._originalPosition = position
         self._velocity = Vector2(MAX_VELOCITY,0)
-        #self._maxVelocity = MAX_VELOCITY
-        #self._acceleration = ACCELERATION
         self._active = True
         self._notActiveCount = 0
         self._zapTimer = 0
@@ -29,15 +32,19 @@ class BlobZap(Mobile):
         self._start = True
 
     def isActive(self):
+        """returns arrow is active"""
         return self._active
 
     def incNotActive(self):
+        """increments count of not being active for purposes of end animation"""
         self._notActiveCount += 1
 
     def notActive(self):
+        """sets zap as not active"""
         return self._notActiveCount
 
     def handleEnd(self):
+        """handle an zap timing out of activity"""
         newSpriteSize = Vector2(22,22)
         self._velocity = Vector2(0,0)
         self._imageName = "bubble_enemies.png"
@@ -49,6 +56,7 @@ class BlobZap(Mobile):
         self._active = False
 
     def handleDestroy(self):
+        """handle an zap colliding violently"""
         newSpriteSize = Vector2(22,22)
         self._velocity = Vector2(0,0)
         self._imageName = "bubble_enemies.png"
@@ -60,7 +68,7 @@ class BlobZap(Mobile):
         self._active = False
 
     def handleEvent(self, event):
-      # attempt to manage state based on keypresses
+      """determines which direction to shoot based on what arrow keys are pressed"""
       if self._start:
           self._start = False
           if event:
@@ -71,6 +79,7 @@ class BlobZap(Mobile):
             self._movement[pygame.K_RIGHT] = True
 
     def update(self, worldInfo, ticks):
+      """updates arrow moving in the direction it is shot"""
       newPosition = self._position
       if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
           self._active = False
@@ -82,4 +91,3 @@ class BlobZap(Mobile):
           self._position.x += -self._velocity.x * ticks
       else:
           self._position.x += self._velocity.x * ticks
-      #super().update(ticks)

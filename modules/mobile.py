@@ -1,3 +1,11 @@
+"""
+Author: Professor Matthews
+Eidted by: Abby Nason
+smash! the ceiling
+mobile.py
+
+Creates a mobile object.
+"""
 
 from .drawable import Drawable
 from .vector2D import Vector2

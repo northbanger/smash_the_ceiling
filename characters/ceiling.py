@@ -1,3 +1,10 @@
+"""
+Abby Nason
+smash! the ceiling
+ceiling.py
+
+Create the ceiling to smash.
+"""
 import pygame
 from modules.vector2D import Vector2
 from modules.drawable import Drawable
@@ -10,8 +17,7 @@ SPRITE_SIZE = Vector2(400, 75)
 class Ceiling(Mobile):
 
     def __init__(self, position, final=False):
-        """initializes to orb class by inheriting from the Drawable class and
-        with instance variables: _velocity, _maxVelocity, _acceleration, and _movement"""
+        """initializes ceiling object"""
         super().__init__("ceiling.png", position, (0,0))
         self._hp = {"left": 0, "right": 0}
         self._final = final
@@ -19,24 +25,28 @@ class Ceiling(Mobile):
         self._velocity = Vector2(0,0)
 
     def incHP(self, side, color="pink"):
+        """increases hit points based on side and keeps track of which blobs
+        have hit the ceiling on the final level"""
         self._hp[side] += 1
         self._hitby[color] = True
 
     def allHit(self):
+        """returns true if all blobs have hit the ceiling"""
         for color in self._hitby:
             if self._hitby[color] == False:
                 return False
         return True
 
     def readyForNextLevel(self):
+        """returns if ready for the next color"""
         if self._final == False and self._hp["left"] + self._hp["right"] >= 6:
             return True
         elif self._final == True and self.allHit() and self._hp["left"] + self._hp["right"] > 17:
             return True
         return False
 
-
     def updateVisual(self):
+        """updates the cracks in the ceiling and if it is broken or not based on the hitpoints"""
         if (self._hp["left"] > 2 or self._hp["right"] > 2):
             if self._hp["left"] > 2 and self._hp["right"] < 2:
                 self._imageName = "ceiling3.png"

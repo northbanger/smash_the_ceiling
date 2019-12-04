@@ -1,3 +1,11 @@
+"""
+Professor Matthews
+smash! the ceiling
+animated.py
+
+Creates an animation object.
+"""
+
 import pygame
 from pygame import image
 import os

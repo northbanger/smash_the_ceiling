@@ -1,3 +1,10 @@
+"""
+Abby Nason
+smash! the ceiling
+main.py
+
+Creates gaston's arrow.
+"""
 import pygame
 from modules.vector2D import Vector2
 from modules.drawable import Drawable
@@ -13,16 +20,12 @@ ZAP_RANGE = 50
 class Arrow(Mobile):
 
     def __init__(self, position, spriteSize):
-        """initializes to orb class by inheriting from the Drawable class and
-        with instance variables: _velocity, _maxVelocity, _acceleration, and _movement"""
+        """intializes an arrow object"""
+        #adjust position correctly before creating it
         position = Vector2(position.x - spriteSize.x//2, position.y)
-        #super().__init__("blobs.png", position, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y)) #, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y), True)
         super().__init__("gaston.png", position, (0,1))
-        #a vector2 of its velocity
         self._originalPosition = position
         self._velocity = Vector2(MAX_VELOCITY,MAX_VELOCITY)
-        #self._maxVelocity = MAX_VELOCITY
-        #self._acceleration = ACCELERATION
         self._active = True
         self._notActiveCount = 0
         self._zapTimer = 0
@@ -30,15 +33,19 @@ class Arrow(Mobile):
         self._start = True
 
     def isActive(self):
+        """returns arrow is active"""
         return self._active
 
     def incNotActive(self):
+        """increments count of not being active for purposes of end aniamtion"""
         self._notActiveCount += 1
 
     def notActive(self):
+        """sets arrow as not active"""
         return self._notActiveCount
 
     def handleEnd(self):
+        """handle an arrow timing out of activity"""
         newSpriteSize = Vector2(22,22)
         self._velocity = Vector2(0,0)
         self._imageName = "bubble_enemies.png"
@@ -50,6 +57,7 @@ class Arrow(Mobile):
         self._active = False
 
     def handleDestroy(self):
+        """handle an arrow colliding violently"""
         newSpriteSize = Vector2(22,22)
         self._velocity = Vector2(0,0)
         self._imageName = "bubble_enemies.png"
@@ -61,6 +69,7 @@ class Arrow(Mobile):
         self._active = False
 
     def update(self, worldInfo, ticks):
+      """update the position of the arrow"""
       newPosition = self._position
       if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
           self._active = False

@@ -1,9 +1,9 @@
 """
 Abby Nason
-Project 2
-star.py
+smash! the ceiling
+blob.py
 
-Defines the Star class, which inherits from the Drawable class.
+Creates a blob, which is our hero.
 """
 
 import pygame
@@ -11,7 +11,6 @@ from modules.vector2D import Vector2
 from modules.drawable import Drawable
 from modules.mobile import Mobile
 from characters.blobzap import BlobZap
-from characters.forcefield import Forcefield
 from modules.frameManager import FRAMES
 import os
 from modules.soundManager import SoundManager
@@ -22,12 +21,11 @@ ACCELERATION = 5.0
 STANDARD_JUMP = 0.75
 
 class Blob(Mobile):
-
+    """creates a blob"""
     def __init__(self, position, color="pink"):
-        """initializes to orb class by inheriting from the Drawable class and
-        with instance variables: _velocity, _maxVelocity, _acceleration, and _movement"""
-        #super().__init__("blobs.png", position, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y)) #, pygame.Rect(0, 0, SPRITE_SIZE.x, SPRITE_SIZE.y), True)
+        """initializes a blob object"""
         self._color = color
+        #determines which blob image to grab based on the color
         if color == "pink":
             self._offset = (0,0)
         elif color == "blue":
@@ -48,7 +46,7 @@ class Blob(Mobile):
         self._jSpeed = 80
         self._zaps = []
         self._alive = True
-        self._forcefield = False#Forcefield(self._position, self._velocity)
+        self._forcefield = False
         self._forcefieldTime = 5
         self._forcefieldTimer = 0
         self._higher = False
@@ -56,25 +54,30 @@ class Blob(Mobile):
         self._highTimer = 0
         self._endLevel = False
 
-    # Public access to tell jumper to try to take some action, typically for collision
     def manageState(self, action):
+      """tells blob which action to take"""
       self._FSM.manageState(action)
-      #self._forcefield._FSM.manageState(action)
 
     def die(self):
+      """kills the blob"""
       self._alive = False
 
     def isDead(self):
+      """returns if blob is dead or not"""
       return not self._alive
 
     def activateForcefield(self):
+        """returns if forcefield is active"""
         self._forcefield = True
 
     def increaseJumpTime(self):
+        """temporarily increases the jump time"""
         self._higher = True
         self._jumpTime = 1.5
 
     def moveForward(self, levelFile):
+        """teleports blob forward if level is horizontal and upward if
+        level is vertical"""
         if levelFile != "level3.txt" and levelFile != "level6.txt":
             self._position.x += 200
 
@@ -83,8 +86,8 @@ class Blob(Mobile):
             self._position.y -= 200
 
     def handleEvent(self, event):
-      # attempt to manage state based on keypresses
-      #self._forcefield.handleEvent(event)
+      """manage state based on key presses"""
+      #arrow keys to move and spacebar to spawn a zap
       if event.type == pygame.KEYDOWN:
          if event.key == pygame.K_LEFT:
             self._movement[pygame.K_LEFT] = True
@@ -96,10 +99,6 @@ class Blob(Mobile):
          elif event.key == pygame.K_UP:
             self._movement[pygame.K_UP] = True
             self._FSM.manageState("jump")
-            self.updateVisual()
-         elif event.key == pygame.K_DOWN:
-            self._movement[pygame.K_DOWN] = True
-            self._FSM.manageState("duck")
             self.updateVisual()
          elif event.key == pygame.K_SPACE:
             if self._FSM.isFacing("left"):
@@ -130,59 +129,70 @@ class Blob(Mobile):
             self.updateVisual()
 
     def handleEndLevel(self):
+        """tells blob it is time to go up in the elevator"""
         self._endLevel = True
 
     def update(self, worldInfo, ticks, cheat=False, horizontal=False):
-      if self._forcefield == True:
-          self._forcefieldTimer += ticks
-          if self._forcefieldTimer > self._forcefieldTime:
-              self._forcefieldTimer = 0
-              self._forcefield = False
-          self.updateVisual()
-      if self._higher == True:
-          self._highTimer += ticks
-          if self._highTimer > self._highTime:
-              self._highTimer = 0
-              self._jumpTime = STANDARD_JUMP
-              self._higher = False
-          self.updateVisual()
+        """update the blob based on movement, animation, if a cheat has been
+        used and the orientation of the level"""
+        #forcefield active
+        if self._forcefield == True:
+            self._forcefieldTimer += ticks
+            if self._forcefieldTimer > self._forcefieldTime:
+                self._forcefieldTimer = 0
+                self._forcefield = False
+            self.updateVisual()
+        #higher jumps active
+        if self._higher == True:
+            self._highTimer += ticks
+            if self._highTimer > self._highTime:
+                self._highTimer = 0
+                self._jumpTime = STANDARD_JUMP
+                self._higher = False
+            self.updateVisual()
 
-      if not cheat:
-          if not self._endLevel:
-              newPosition = self._position
-              if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
-                  self._velocity.x = -self._velocity.x
-              super().update(ticks)
-              #scale velocity if magnitude exceeds max
-              if self._velocity.magnitude() > self._maxVelocity:
-                  self._velocity.scale(self._maxVelocity)
-              #self._forcefield.update(worldInfo, ticks)
-              # decrease the jump timer by ticks
-              if self._FSM == "jumping":
-                  self._jumpTimer += ticks
+        #no cheat used
+        if not cheat:
+            #not the end of the level
+            if not self._endLevel:
+                newPosition = self._position
+                if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
+                    self._velocity.x = -self._velocity.x
+                super().update(ticks)
+                #scale velocity if magnitude exceeds max
+                if self._velocity.magnitude() > self._maxVelocity:
+                    self._velocity.scale(self._maxVelocity)
+                #self._forcefield.update(worldInfo, ticks)
+                # decrease the jump timer by ticks
+                if self._FSM == "jumping":
+                    self._jumpTimer += ticks
 
-                  if self._jumpTimer > self._jumpTime:
-                      self._FSM.manageState("fall")
-              elif self._FSM == "grounded" or self._FSM == "platformed":
-                  self._jumpTimer = 0
-                  self.updateVisual()
-          else:
-              self._position.y -= 5
-              self._velocity.x = 0
-              self._velocity.y = -MAX_VELOCITY//8 * ticks
-              if self._velocity.magnitude() > self._maxVelocity:
-                  self._velocity.scale(self._maxVelocity)
-              #super().update(ticks)
-      else:
-          if horizontal and self._position.x < 1950:
-              self._position.x = 1950
-              self._position.y = 300 - 32
-          elif not horizontal and self._position.y > 70:
-              self._position.x = 50
-              self._position.y = 70
+                    if self._jumpTimer > self._jumpTime:
+                        self._FSM.manageState("fall")
+                elif self._FSM == "grounded" or self._FSM == "platformed":
+                    self._jumpTimer = 0
+                    self.updateVisual()
+            else:
+                #elevator transition
+                self._position.y -= 5
+                self._velocity.x = 0
+                self._velocity.y = -MAX_VELOCITY//8 * ticks
+                if self._velocity.magnitude() > self._maxVelocity:
+                    self._velocity.scale(self._maxVelocity)
+                #super().update(ticks)
+        else:
+            #cheat used -- different for horizontal vs. vertical
+            if horizontal and self._position.x < 1950:
+                self._position.x = 1950
+                self._position.y = 300 - 32
+            elif not horizontal and self._position.y > 70:
+                self._position.x = 50
+                self._position.y = 70
 
 
     def updateVisual(self):
+        """update the image of the blob depending on state and if powerups are active"""
+        #if forcefield is active grab images that have the forcefield on them
         if self._forcefield:
             fullImage = pygame.image.load(os.path.join("images", "blobs_forcefield.png")).convert()
             #if self._FSM.isDucking():
@@ -193,63 +203,15 @@ class Blob(Mobile):
                 y = 0
             self._image = FRAMES.getFrame("blobs_forcefield.png", (self._offset[0],y))
         else:
+            #otherwise grab the normal images
             fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
-            #if self._FSM.isDucking():
-            #    y = 1
+            #if in air
             if self._FSM.isJumping() or self._FSM.isFalling():
                 y = 2
+            #if dead and grounded
             elif self._FSM.isGrounded() and not self._alive:
                 y = 1
             else:
+                #if normal on ground or platformed
                 y = 0
             self._image = FRAMES.getFrame(self._imageName, (self._offset[0],y))
-
-    def move(self, event):
-        """sets the values in the _movement dictionary based on which arrow keys
-        are up (False) and which keys are down (True)"""
-        #keydown event
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_DOWN:
-                self._movement[pygame.K_DOWN] = True
-            elif event.key == pygame.K_UP:
-                self._movement[pygame.K_UP] = True
-            elif event.key == pygame.K_LEFT:
-                self._movement[pygame.K_LEFT] = True
-            elif event.key == pygame.K_RIGHT:
-                self._movement[pygame.K_RIGHT] = True
-        #keyup event
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_DOWN:
-                self._movement[pygame.K_DOWN] = False
-            elif event.key == pygame.K_UP:
-                self._movement[pygame.K_UP] = False
-            elif event.key == pygame.K_LEFT:
-                self._movement[pygame.K_LEFT] = False
-            elif event.key == pygame.K_RIGHT:
-                self._movement[pygame.K_RIGHT] = False
-"""
-    def update(self, worldInfo, ticks):
-        #updates the star's position based on its current velocity
-        #handle velocity according to the keys that are pressed
-        if self._movement[pygame.K_DOWN]:
-            self._velocity.y += self._acceleration
-        if self._movement[pygame.K_UP]:
-            self._velocity.y += -self._acceleration
-        if self._movement[pygame.K_LEFT]:
-            self._velocity.x += -self._acceleration
-        if self._movement[pygame.K_RIGHT]:
-            self._velocity.x += self._acceleration
-
-        #scale the velocity if the star's magnitude exceeds max velocity
-        if self._velocity.magnitude() > self._maxVelocity:
-            self._velocity.scale(self._maxVelocity)
-
-        #handle if the star is going to exceed the world bounds
-        newPosition = self._position + self._velocity * ticks
-        if newPosition[0] < 0 or newPosition[0] > worldInfo[0]:
-            self._velocity.x = -self._velocity.x
-        if newPosition[1] < 0 or newPosition[1] > worldInfo[1]:
-            self._velocity.y = -self._velocity.y
-        newPosition = self._position + self._velocity * ticks
-        self._position = newPosition
-        """
