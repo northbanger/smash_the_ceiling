@@ -71,6 +71,7 @@ class SoundManager(object):
 
          pygame.mixer.music.load(os.path.join(SoundManager._SM._MUSIC_FOLDER, fileName))
          pygame.mixer.music.play(loops=loop)
+         pygame.mixer.music.set_volume(0.25)
 
          self._musicStatus = "play"
 
