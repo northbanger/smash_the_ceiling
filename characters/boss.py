@@ -33,7 +33,6 @@ class Boss(Animated):
     def handleCollision(self):
         """decreases hit points when collision happens"""
         self._hp -= 1
-        print(self._hp)
 
     def isDead(self):
         """determines if enemy is dead"""

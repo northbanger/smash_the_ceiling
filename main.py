@@ -46,8 +46,8 @@ def main():
    pygame.display.set_caption("Smash! the Ceiling")
 
    # creating the screen
-   screen = pygame.display.set_mode(UPSCALED)
-   #screen = pygame.display.set_mode(UPSCALED, pygame.FULLSCREEN)
+   #screen = pygame.display.set_mode(UPSCALED)
+   screen = pygame.display.set_mode(UPSCALED, pygame.FULLSCREEN)
    drawSurface = pygame.Surface(SCREEN_SIZE)
 
    platforms = []

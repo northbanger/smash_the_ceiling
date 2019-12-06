@@ -429,6 +429,7 @@ class LevelParser:
                      self._blob._velocity.y = -self._blob._velocity.y
                  self._blob.manageState("fall")
              elif (clipRect2.width >= 5 or (clipRect2.width > 0 and totalClipWidth == 32)) and blobPos[1] + blobPos[3] <= platPos[1] + platPos[3]:
+                 #make sure this is the first time the blob has collided with the platofrm before playing the sound effect
                  if self._samePlat != self._blob._position.y:
                      self._samePlat = self._blob._position.y
                      SoundManager.getInstance().playSound("plop.ogg")
@@ -438,8 +439,8 @@ class LevelParser:
                  self._blob.manageState("fall")
                  self._blob.updateVisual()
 
+         #keep the blobs that are not selected in level 6 in their grounded/platformed image
          if self._filename == "level6.txt":
-            #determine if the blob has collided with platforms
             for otraBlob in self._activeBlobs:
                 if otraBlob != self._blob:
                     otraBlob.updateVisual(inactive=True)
@@ -557,7 +558,7 @@ class LevelParser:
                          blobZap200.handleDestroy()
                          self._blob.die()
 
-         #determine if a spawn has collided with the boss blob
+         #determine if a spawn has collided with the blob
          for boss3 in self._enemies["boss"]:
              for spawn3 in boss3._spawns:
                  if self._blob.getCollideRect().colliderect(spawn3.getCollideRect()):
@@ -578,7 +579,7 @@ class LevelParser:
                  self._blob._velocity.x = -150
                  self._blob._velocity.y = -self._blob._velocity.y
 
-         #determine if a boss has collided with the boss
+         #determine if a boss has collided with its spawns
          for boss4 in self._enemies["boss"]:
              for spawn4 in boss4._spawns:
                  if boss4.getCollideRect().colliderect(spawn4.getCollideRect()) and spawn4._opposite == True:
