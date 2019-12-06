@@ -51,12 +51,15 @@ class FrameManager(object):
          "background3b.png": (400, 2400),
          "background4.png": (2400, 400),
          "background5.png": (400, 400),
+         "background6.png": (400, 400),
          "ground.png": (50,3),
          "ground2.png": (2400, 100),
          "ground3.png": (2400, 100),
          "ground4a.png": (2400, 100),
          "ground4b.png": (400, 100),
          "ground5.png": (2400, 100),
+         "animation_background.png": (400,400),
+         "animation_frame.png": (400,400),
          "flowers.png": (16,16),
          "nuts_and_milk.png": (16,16),
          "dizzy_devil.png": (32,32),
@@ -85,13 +88,15 @@ class FrameManager(object):
          "block.png": (100,50),
          "downbar.png": (112,28),
          "downbarselection.png": (28,28),
+         "exclamation.png": (8,8),
+         "menu_accent.png": (160,18),
       }
 
       # A default frame size
       _DEFAULT_FRAME = (32,32)
 
       # A list of images that require to be loaded with transparency
-      _TRANSPARENCY = ["forcefield.png", "elevator_doors.png",  "elevator_front.png", "blob_selection.png", "font.png", "ceiling.png", "ceiling3.png", "ceiling4.png", "ceiling5.png", "ceiling6.png", "ceiling7.png", "broken.png", "powerup.png", "powerup2.png", "powerup3.png", "blobs_forcefield.png", "downbar.png"]
+      _TRANSPARENCY = ["exclamation.png", "forcefield.png", "elevator_doors.png",  "elevator_front.png", "blob_selection.png", "font.png", "ceiling.png", "ceiling3.png", "ceiling4.png", "ceiling5.png", "ceiling6.png", "ceiling7.png", "broken.png", "powerup.png", "powerup2.png", "powerup3.png", "blobs_forcefield.png", "downbar.png", "animation_frame.png"]
 
       # A list of images that require to be loaded with a color key
       _COLOR_KEY = ["blobs.png", "menu_blobs.png", "fryingpan.png", "bra.png", "weddingring.png", "platform.png", "platform2.png", "platform3.png", "platform4.png", "flowers.png", "nuts_and_milk.png", "dizzy_devil.png", "bubble_enemies.png", "gaston.png", "startbutton.png", "boss.png", "blob_spawns.png"]

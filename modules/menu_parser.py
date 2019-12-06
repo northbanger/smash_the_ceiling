@@ -20,16 +20,17 @@ from characters.blob import Blob
 from characters.elevator import Elevator
 
 CHAR_SPRITE_SIZE = Vector2(32, 32)
-SCREEN_SIZE = [200,200]
+SCREEN_SIZE = [160,160]
 SCALE = 2
-SCALE2 = 2
-UPSCALED = [x * SCALE2 for x in SCREEN_SIZE]
+SCALE2 = 2.5
+UPSCALED = [int(x * SCALE2) for x in SCREEN_SIZE]
 
 class MenuParser:
     def __init__(self, filename):
         """intializes a menu"""
         self._filename = filename
         self._background = Drawable(self.getBackground(), Vector2(0,0), (0,0))
+        self._accent = Drawable("menu_accent.png", Vector2(0,45), (0,0))
         self._worldsize = (400, 400)
         self._selectionAreas = []
         self._blobs = []
@@ -41,9 +42,11 @@ class MenuParser:
     def getBackground(self):
         """returns the appropriate background image"""
         if self._filename == "startmenu.txt":
-            backgroundImage = "background.png"
+            #backgroundImage = "background.png"
+            backgroundImage = "background6.png"
         elif self._filename == "blobmenu.txt":
-            backgroundImage = "background2.png"
+            #backgroundImage = "background2.png"
+            backgroundImage = "background6.png"
         return backgroundImage
 
     def loadMenu(self):
@@ -103,14 +106,21 @@ class MenuParser:
             info = line.split(",")
             if info[0] == "text":
                 text = info[3].upper()
-                xCenter = (self._worldsize[0] + int(info[1]))/4 - (len(text)//2 * 8)
+                #xCenter = (self._worldsize[0] + int(info[1]))/4 - (len(text)//2 * 8)
+                if self._filename == "startmenu.txt":
+                    xCenter = 10
+                else:
+                    xCenter = 15
                 for i in range(len(text)):
                     if text[i] != " ":
-                        aVal = ord(text[i])
-                        numInAlph = aVal - 65
-                        offsetY = numInAlph // 13
-                        offsetX = numInAlph - 13*offsetY
-                        self._text.append(Drawable("font.png", Vector2(int(xCenter) + 8 * i, int(info[2])), (2 + offsetX, 7 + offsetY)))
+                        if text[i] == "!":
+                            self._text.append(Drawable("exclamation.png", Vector2(int(xCenter) + 8 * i, int(info[2])), (0,0)))
+                        else:
+                            aVal = ord(text[i])
+                            numInAlph = aVal - 65
+                            offsetY = numInAlph // 13
+                            offsetX = numInAlph - 13*offsetY
+                            self._text.append(Drawable("font.png", Vector2(int(xCenter) + 8 * i, int(info[2])), (2 + offsetX, 7 + offsetY)))
 
     def getWorldSize(self,fileContents):
         """parses the menu layout file for the world size (vertical or horizontal)"""
@@ -124,6 +134,7 @@ class MenuParser:
         """draws everything in the menu"""
         drawSurface = pygame.Surface(SCREEN_SIZE)
         self._background.draw(drawSurface)
+        #self._accent.draw(drawSurface)
         #upscale the text
         for letter in self._text:
             letter.draw(drawSurface)

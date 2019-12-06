@@ -3,4 +3,4 @@ selection,11,144
 selection,144,144
 selection,277,144
 start,0,300
-text,0,50,select your blob
+text,0,30,select your blob

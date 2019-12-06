@@ -35,7 +35,8 @@ CHAR_SPRITE_SIZE = Vector2(32, 32)
 LEVELS = ["level1.txt", "level2.txt", "level3.txt", "level4.txt", "level5.txt", "level6.txt"]
 MENUS = ["startmenu.txt", "blobmenu.txt"]
 ANIMATIONS = ["smash1.txt", "smash2.txt"]
-ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
+#ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
+ORDER = {1: (MENUS, 0), 2:(MENUS, 1), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
 
 def main():
 

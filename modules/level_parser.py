@@ -278,6 +278,17 @@ class LevelParser:
             for trap2 in self._traps[category2]:
                 trap2.draw(screen)
 
+        for bossie in self._enemies["boss"]:
+            for spawn in bossie._spawns:
+                #determines timing of the end of the animation
+                if spawn.isActive():
+                    spawn.draw(screen)
+                elif spawn.notActive() > 15:
+                    bossie._spawns.remove(spawn)
+                else:
+                    spawn.incNotActive()
+                    spawn.draw(screen)
+
         for category10 in self._enemies:
             for enemy10 in self._enemies[category10]:
                 enemy10.draw(screen)
@@ -344,17 +355,6 @@ class LevelParser:
                 else:
                     arrow15.incNotActive()
                     arrow15.draw(screen)
-
-        for bossie in self._enemies["boss"]:
-            for spawn in bossie._spawns:
-                #determines timing of the end of the animation
-                if spawn.isActive():
-                    spawn.draw(screen)
-                elif spawn.notActive() > 15:
-                    bossie._spawns.remove(spawn)
-                else:
-                    spawn.incNotActive()
-                    spawn.draw(screen)
 
         if self._downbar != None:
             self._downbar.draw(screen)

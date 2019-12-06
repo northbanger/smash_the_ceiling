@@ -16,8 +16,8 @@ import os
 from modules.soundManager import SoundManager
 
 SPRITE_SIZE = Vector2(32, 32)
-MAX_VELOCITY = 150
-ACCELERATION = 5.0
+MAX_VELOCITY = 160 #150
+ACCELERATION = 7.5 #5.0
 STANDARD_JUMP = 0.75
 
 class Blob(Mobile):

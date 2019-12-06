@@ -29,6 +29,7 @@ class AnimationParser:
         """intializes an animation"""
         self._filename = filename
         self._background = Drawable(self.getBackground(), Vector2(0,0), (0,0))
+        self._frame = Drawable("animation_frame.png", Vector2(0,0), (0,0))
         self._worldsize = (400, 400)
         self._text = []
         self._animationTimer = 0
@@ -38,9 +39,9 @@ class AnimationParser:
     def getBackground(self):
         """returns the appropriate background image"""
         if self._filename == "smash1.txt":
-            backgroundImage = "background.png"
+            backgroundImage = "animation_background.png"
         elif self._filename == "smash2.txt":
-            backgroundImage = "background2.png"
+            backgroundImage = "animation_background.png"
         return backgroundImage
 
     def loadAnimation(self):
@@ -67,13 +68,21 @@ class AnimationParser:
             info = line.split(",")
             if info[0] == "text":
                 text = info[3].upper()
-                xCenter = (self._worldsize[0] + int(info[1]))/2 - (len(text)//2 * 11)
+                #xCenter = (self._worldsize[0] + int(info[1]))/2 - (len(text)//2 * 11)
+                xCenter = 50
                 for i in range(len(text)):
                     if text[i] != " ":
-                        aVal = ord(text[i])
-                        numInAlph = aVal - 65
-                        offsetY = numInAlph // 13
-                        offsetX = numInAlph - 13*offsetY
+                        if text[i] == ".":
+                            offsetY = 3
+                            offsetX = 5
+                        elif text[i] == "-":
+                            offsetY = 3
+                            offsetX = 4
+                        else:
+                            aVal = ord(text[i])
+                            numInAlph = aVal - 65
+                            offsetY = numInAlph // 13
+                            offsetX = numInAlph - 13*offsetY
                         self._text.append(Drawable("font.png", Vector2(int(xCenter) + 8 * i, int(info[2])), (2 + offsetX, 7 + offsetY)))
 
     def getWorldSize(self,fileContents):
@@ -88,6 +97,7 @@ class AnimationParser:
         """draws everything in the animation"""
         drawSurface = pygame.Surface(SCREEN_SIZE)
         self._background.draw(drawSurface)
+        self._frame.draw(drawSurface)
         #self._background.draw(screen)
         #for letter in self._text:
         #    letter.draw(screen)
