@@ -33,7 +33,7 @@ class AnimationParser:
         self._worldsize = (400, 400)
         self._text = []
         self._animationTimer = 0
-        self._animationTime = 20
+        self._animationTime = 10
         self._ready = False
 
     def getBackground(self):
