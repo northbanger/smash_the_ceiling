@@ -32,7 +32,7 @@ class Devil(Mobile):
         self._waitTimer = 0
         self._right = True
         self._patrolRect = pygame.Rect(self._position.x, self._position.y, self._patrolLength, SPRITE_SIZE.y)
-        self._hp = 25
+        self._hp = 50
 
     def handleCollision(self):
        """decreases hit points when collided with"""

@@ -28,7 +28,7 @@ class Gaston(Animated):
         self._arrowTimer = 0
         self._arrowTime = 1
         self._framesPerSecond = 5.0
-        self._hp = 50
+        self._hp = 75
 
     def handleCollision(self):
        """decreases hit points if collided with"""
