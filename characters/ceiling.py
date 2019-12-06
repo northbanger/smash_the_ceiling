@@ -11,6 +11,7 @@ from modules.drawable import Drawable
 from modules.mobile import Mobile
 import os
 from modules.frameManager import FRAMES
+from modules.soundManager import SoundManager
 
 SPRITE_SIZE = Vector2(400, 75)
 
@@ -27,6 +28,7 @@ class Ceiling(Mobile):
     def incHP(self, side, color="pink"):
         """increases hit points based on side and keeps track of which blobs
         have hit the ceiling on the final level"""
+        SoundManager.getInstance().playSound("hit_ceiling.ogg")
         self._hp[side] += 1
         self._hitby[color] = True
 

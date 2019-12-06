@@ -1,6 +1,6 @@
 world size,400,400
 text,0,50,even though you have made it 
-text,0,85,to the ceiling
+text,0,85,to the ceiling.
 text,0,120,you cannot smash it alone
 text,0,155,you must also lift up 
 text,0,190,your fellow women and allies

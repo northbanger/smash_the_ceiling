@@ -16,8 +16,8 @@ import os
 from modules.soundManager import SoundManager
 
 SPRITE_SIZE = Vector2(32, 32)
-MAX_VELOCITY = 160 #150
-ACCELERATION = 7.5 #5.0
+MAX_VELOCITY = 155 #150
+ACCELERATION = 6.5 #5.0
 STANDARD_JUMP = 0.75
 
 class Blob(Mobile):
@@ -190,28 +190,31 @@ class Blob(Mobile):
                 self._position.y = 70
 
 
-    def updateVisual(self):
+    def updateVisual(self, inactive=False):
         """update the image of the blob depending on state and if powerups are active"""
         #if forcefield is active grab images that have the forcefield on them
-        if self._forcefield:
-            fullImage = pygame.image.load(os.path.join("images", "blobs_forcefield.png")).convert()
-            #if self._FSM.isDucking():
-            #    y = 1
-            if self._FSM.isJumping() or self._FSM.isFalling():
-                y = 2
-            else:
-                y = 0
-            self._image = FRAMES.getFrame("blobs_forcefield.png", (self._offset[0],y))
+        if inactive:
+            self._image = FRAMES.getFrame(self._imageName, (self._offset[0],0))
         else:
-            #otherwise grab the normal images
-            fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
-            #if in air
-            if self._FSM.isJumping() or self._FSM.isFalling():
-                y = 2
-            #if dead and grounded
-            elif self._FSM.isGrounded() and not self._alive:
-                y = 1
+            if self._forcefield:
+                fullImage = pygame.image.load(os.path.join("images", "blobs_forcefield.png")).convert()
+                #if self._FSM.isDucking():
+                #    y = 1
+                if self._FSM.isJumping() or self._FSM.isFalling():
+                    y = 2
+                else:
+                    y = 0
+                self._image = FRAMES.getFrame("blobs.png", (self._offset[0],y))
             else:
-                #if normal on ground or platformed
-                y = 0
-            self._image = FRAMES.getFrame(self._imageName, (self._offset[0],y))
+                #otherwise grab the normal images
+                fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
+                #if in air
+                if self._FSM.isJumping() or self._FSM.isFalling():
+                    y = 2
+                #if dead and grounded
+                elif self._FSM.isGrounded() and not self._alive:
+                    y = 1
+                else:
+                    #if normal on ground or platformed
+                    y = 0
+                self._image = FRAMES.getFrame(self._imageName, (self._offset[0],y))

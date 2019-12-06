@@ -6,6 +6,7 @@ FSM.py
 
 Creates a FSM object.
 """
+from modules.soundManager import SoundManager
 
 class FSM(object):
    def __init__(self, state="falling"):
@@ -26,6 +27,7 @@ class FSM(object):
       # If we "collideGround" and are "falling", change to "grounded"
       elif action == "collideGround" and self._state == "falling":
           self._setState("grounded")
+          #SoundManager.getInstance().playSound("plop.ogg")
 
       # If the new action is "jump" and we not "falling", change state to "jumping"
       elif action == "jump" and self._state != "falling":
@@ -50,15 +52,18 @@ class FSM(object):
       # If the new state is "collideGround" and we are "ducking", change state to "grounded"
       elif action =="collideGround" and self._state == "ducking":
           self._setState("grounded")
+          #SoundManager.getInstance().playSound("plop.ogg")
 
       # If the new state is "fall" and we are "platformed", change state to "falling"
       elif action == "fall" and self._state == "platformed":
           #print("here")
           self._setState("falling")
+          #SoundManager.getInstance().playSound("plop.ogg")
 
       # If the new state is "collidePlatform" and we are "falling" or "ducking", change state to "platoform"
       elif action == "collidePlatform" and (self._state == "falling" or self._state == "ducking"):
           self._setState("platformed")
+          #SoundManager.getInstance().playSound("plop.ogg")
 
 
    def _setFacing(self, direction):

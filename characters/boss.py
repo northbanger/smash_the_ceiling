@@ -28,11 +28,12 @@ class Boss(Animated):
         self._spawnTimer = 0
         self._spawnTime = 3
         self._framesPerSecond = 5.0
-        self._hp = 500
+        self._hp = 150
 
     def handleCollision(self):
         """decreases hit points when collision happens"""
         self._hp -= 1
+        print(self._hp)
 
     def isDead(self):
         """determines if enemy is dead"""

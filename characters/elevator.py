@@ -20,7 +20,6 @@ class Elevator:
        self._position = position
        self._parts = {"back": [], "front": [], "doors": [], "top": []}
        totalHeight = worldHeight-(50 + MAIN_SPRITE_SIZE.x)
-       print(totalHeight)
        for i in range(0, totalHeight, MAIN_SPRITE_SIZE.y):
            self._parts["back"].append(Drawable("elevator_back.png", Vector2(self._position.x,i), (0,0)))
        for j in range(0, totalHeight-60, MAIN_SPRITE_SIZE.y):

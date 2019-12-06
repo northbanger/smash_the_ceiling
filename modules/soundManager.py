@@ -40,6 +40,11 @@ class SoundManager(object):
          "TheMan.ogg": _MUSIC_FOLDER,
          "Nightmare.mp3": _MUSIC_FOLDER,
          "heart.ogg": _SFX_FOLDER,
+         "plop.ogg": _SFX_FOLDER,
+         "explosion.ogg": _SFX_FOLDER,
+         "powerup.ogg": _SFX_FOLDER,
+         "big_smash.ogg": _SFX_FOLDER,
+         "hit_ceiling.ogg": _SFX_FOLDER,
       }
 
 

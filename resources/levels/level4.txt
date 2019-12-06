@@ -8,7 +8,7 @@ platform,1700,200,4
 platform,1250,145,5
 platform,1950,120,5
 platform,1400,260,5
-platform,2000,270,4
+platform,2000,240,2
 trap,bra,750,250
 trap,bra,1525,260
 trap,pan,925,100
@@ -18,6 +18,6 @@ enemy,devil,900,225,3
 enemy,devil,1100,225,3
 enemy,gaston,650,250
 enemy,boss,400,300
-enemy,boss,1800,300
+enemy,boss,2250,300
 powerup,floppy,300,1025
 powerup,vote,600,250

@@ -21,6 +21,7 @@ from characters.elevator import Elevator
 from characters.ceiling import Ceiling
 from characters.boss import Boss
 from characters.powerup import Floppy,Sign,Vote
+from modules.soundManager import SoundManager
 
 CHAR_SPRITE_SIZE = Vector2(32, 32)
 SCALE = 2
@@ -56,6 +57,7 @@ class LevelParser:
         self._downbar = None
         self._downbarSelections = []
         self._selectCount = 0
+        self._samePlat = 0
 
     def getBackground(self):
         """returns the appropriate background image"""
@@ -374,6 +376,9 @@ class LevelParser:
          clipRect = self._blob.getCollideRect().clip(self._ground.getCollideRect())
 
          if clipRect.width > 0:
+            if self._samePlat != self._blob._position.y:
+                self._samePlat = self._blob._position.y
+                SoundManager.getInstance().playSound("plop.ogg")
             self._blob.manageState("collideGround")
 
          i = True
@@ -424,11 +429,24 @@ class LevelParser:
                      self._blob._velocity.y = -self._blob._velocity.y
                  self._blob.manageState("fall")
              elif (clipRect2.width >= 5 or (clipRect2.width > 0 and totalClipWidth == 32)) and blobPos[1] + blobPos[3] <= platPos[1] + platPos[3]:
+                 if self._samePlat != self._blob._position.y:
+                     self._samePlat = self._blob._position.y
+                     SoundManager.getInstance().playSound("plop.ogg")
                  self._blob.manageState("collidePlatform")
                  i = False
              elif clipRect2.width < 5 and self._blob._FSM == "platformed" and i:
                  self._blob.manageState("fall")
                  self._blob.updateVisual()
+
+         if self._filename == "level6.txt":
+            #determine if the blob has collided with platforms
+            for otraBlob in self._activeBlobs:
+                if otraBlob != self._blob:
+                    otraBlob.updateVisual(inactive=True)
+                    if otraBlob._position.y >= self._worldsize[1] - 100:
+                        otraBlob.manageState("collideGround")
+                    else:
+                        otraBlob.manageState("collidePlatform")
 
          #determine if blob has collided with a trap
          for category in self._traps:
@@ -455,18 +473,21 @@ class LevelParser:
          for powerupT1 in self._powerups["floppy"]:
              if self._blob.getCollideRect().colliderect(powerupT1.getCollideRect()):
                  powerupT1.handleEnd()
+                 SoundManager.getInstance().playSound("powerup.ogg")
                  self._blob.activateForcefield()
 
          #determine if a blob has collided with powerup that increases jump time
          for powerupT2 in self._powerups["sign"]:
              if self._blob.getCollideRect().colliderect(powerupT2.getCollideRect()):
                  powerupT2.handleEnd()
+                 SoundManager.getInstance().playSound("powerup.ogg")
                  self._blob.increaseJumpTime()
 
          #determine if a blob has collided with powerup that teleports them forward
          for powerupT3 in self._powerups["vote"]:
              if self._blob.getCollideRect().colliderect(powerupT3.getCollideRect()):
                  powerupT3.handleEnd()
+                 SoundManager.getInstance().playSound("powerup.ogg")
                  self._blob.moveForward(self._filename)
 
          #determine if a heart the blob shoots has collided with traps
@@ -477,9 +498,11 @@ class LevelParser:
                          if category4 == "bra":
                              trap4.handleCollision()
                              zap4.handleDestroy()
+                             SoundManager.getInstance().playSound("explosion.ogg")
                          if category4 == "pan":
                              self._traps[category4].remove(trap4)
                              zap4.handleDestroy()
+                             SoundManager.getInstance().playSound("explosion.ogg")
                          elif category4 == "ring":
                               zap4.handleEnd()
 
@@ -490,6 +513,7 @@ class LevelParser:
                      if zap17.getCollideRect().colliderect(enemy17.getCollideRect()):
                          enemy17.handleCollision()
                          zap17.handleDestroy()
+                         SoundManager.getInstance().playSound("explosion.ogg")
                          if enemy17.isDead() and enemy17 in self._enemies[category17]:
                              self._enemies[category17].remove(enemy17)
 
@@ -507,7 +531,9 @@ class LevelParser:
              for ringZap in ring7._zaps:
                  for blobZap in self._blob._zaps:
                      if ringZap.getCollideRect().colliderect(blobZap.getCollideRect()):
+                         SoundManager.getInstance().playSound("explosion.ogg")
                          ringZap.handleDestroy()
+                         SoundManager.getInstance().playSound("explosion.ogg")
                          blobZap.handleDestroy()
 
          #determine if a heart the blob shoots has collided with gaston's arrows
@@ -516,14 +542,18 @@ class LevelParser:
                  for blobZap50 in self._blob._zaps:
                      if arrow50.getCollideRect().colliderect(blobZap50.getCollideRect()):
                          arrow50.handleDestroy()
+                         SoundManager.getInstance().playSound("explosion.ogg")
                          blobZap50.handleDestroy()
+                         SoundManager.getInstance().playSound("explosion.ogg")
 
          #determine if a heart the blob shoots has collided with traps
          for boss2 in self._enemies["boss"]:
              for spawn2 in boss2._spawns:
                  for blobZap200 in self._blob._zaps:
                      if spawn2.getCollideRect().colliderect(blobZap200.getCollideRect()):
+                         SoundManager.getInstance().playSound("explosion.ogg")
                          spawn2.handleDestroy()
+                         SoundManager.getInstance().playSound("explosion.ogg")
                          blobZap200.handleDestroy()
                          self._blob.die()
 
@@ -585,6 +615,7 @@ class LevelParser:
              for ring40 in self._traps["ring"]:
                  for ringZap40 in ring40._zaps:
                      if ringZap40.getCollideRect().colliderect(self._blob.getCollideRect()):
+                         SoundManager.getInstance().playSound("explosion.ogg")
                          ringZap40.handleDestroy()
 
              for gaston82 in self._enemies["gaston"]:
@@ -596,6 +627,7 @@ class LevelParser:
          for ring20 in self._traps["ring"]:
              for zap20 in ring20._zaps:
                  if zap20.getCollideRect().colliderect(self._blob.getCollideRect()):
+                     SoundManager.getInstance().playSound("explosion.ogg")
                      zap20.handleDestroy()
                      if not self._blob._forcefield:
                          self._blob.die()
@@ -604,6 +636,7 @@ class LevelParser:
          for gaston64 in self._enemies["gaston"]:
              for arrow64 in gaston64._arrows:
                  if arrow64.getCollideRect().colliderect(self._blob.getCollideRect()):
+                     SoundManager.getInstance().playSound("explosion.ogg")
                      arrow64.handleDestroy()
                      if not self._blob._forcefield:
                          self._blob.die()
@@ -663,6 +696,7 @@ class LevelParser:
 
         #update ceiling falling once ceiling is smashed in final level
         if self._filename == "level6.txt" and self._ceiling.readyForNextLevel():
+            SoundManager.getInstance().playSound("big_smash.ogg")
             self._ceiling.update(ticks)
 
         #if blob is dead, reset the level

@@ -35,8 +35,7 @@ CHAR_SPRITE_SIZE = Vector2(32, 32)
 LEVELS = ["level1.txt", "level2.txt", "level3.txt", "level4.txt", "level5.txt", "level6.txt"]
 MENUS = ["startmenu.txt", "blobmenu.txt"]
 ANIMATIONS = ["smash1.txt", "smash2.txt"]
-#ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
-ORDER = {1: (MENUS, 0), 2:(MENUS, 1), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
+ORDER = {1: (MENUS, 0), 2:(LEVELS, 0), 3:(LEVELS, 1), 4: (LEVELS, 2), 5:(LEVELS, 4), 6: (ANIMATIONS, 0), 7:(MENUS, 1), 8:(LEVELS, 3), 9:(LEVELS, 5), 10:(ANIMATIONS,1)}
 
 def main():
 
@@ -47,8 +46,8 @@ def main():
    pygame.display.set_caption("Smash! the Ceiling")
 
    # creating the screen
-   #screen = pygame.display.set_mode(SCREEN_SIZE)
    screen = pygame.display.set_mode(UPSCALED)
+   #screen = pygame.display.set_mode(UPSCALED, pygame.FULLSCREEN)
    drawSurface = pygame.Surface(SCREEN_SIZE)
 
    platforms = []
@@ -88,6 +87,8 @@ def main():
 
    endCount = 0
 
+   soundChange = 0
+
    #play music
    SoundManager.getInstance().playMusic("TheMan.ogg", loop=-1)
 
@@ -95,6 +96,13 @@ def main():
    while RUNNING:
 
       gameClock.tick()
+
+      if phase[0][phase[1]] == "level4.txt" and soundChange == 0:
+          SoundManager.getInstance().stopMusic()
+          SoundManager.getInstance().playMusic("Nightmare.ogg", loop=-1)
+          soundChange += 1
+
+
 
       # draw everything based on the offset and upscale
       if phase[0] == LEVELS:
