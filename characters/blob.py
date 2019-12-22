@@ -204,7 +204,7 @@ class Blob(Mobile):
                     y = 2
                 else:
                     y = 0
-                self._image = FRAMES.getFrame("blobs.png", (self._offset[0],y))
+                self._image = FRAMES.getFrame("blobs_forcefield.png", (self._offset[0],y))
             else:
                 #otherwise grab the normal images
                 fullImage = pygame.image.load(os.path.join("images", self._imageName)).convert()
